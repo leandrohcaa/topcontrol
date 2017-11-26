@@ -1,0 +1,44 @@
+<div fxFlexFill>
+	<mat-tab-group fxFlexFill>
+	  <mat-tab label="Preferências" fxFlexFill>
+		<div fxLayoutAlign="start start" fxFlexFill fxLayoutWrap>
+			<mat-card style="margin:20px" *ngFor="let p of preferencesList">{{p.name}}</mat-card>
+		</div>
+	  </mat-tab>
+	  <mat-tab label="Pedido" fxFlexFill>
+	  	<div fxLayout="row" fxLayoutAlign="center start" fxFlexFill>
+		  	<div fxFlex="30">
+				<form fxFlexFill> 
+				  <span>Escolha o produto desejado: </span>
+				  <mat-form-field>
+					<input matInput placeholder="Produto" aria-label="Produto" [matAutocomplete]="auto" [formControl]="productRequestInputFormControl" />
+					<mat-autocomplete #auto="matAutocomplete" (optionSelected)="productRequestOnSelect($event)" 
+						[displayWith]="productRequestWithDisplay">
+					  <mat-option *ngFor="let p of filteredProductRequestList | async" [value]="p">
+						<span>{{ p.name }}</span>
+					  </mat-option>
+					</mat-autocomplete>
+				  </mat-form-field>
+				</form>
+			</div>
+		  	<div fxFlex="40" style="padding:10px">
+				<mat-card>
+					<mat-card-title>
+	  					<div fxLayout="row" fxLayoutAlign="center center" fxFlexFill>
+	  						<div fxFlex="90">Carrinho</div>
+	  						<div fxFlex="10"><mat-icon>add_shopping_cart</mat-icon></div>							
+						</div>
+					</mat-card-title>
+					<mat-card-content>
+				  		<mat-selection-list #selectedProductsId>
+						  <mat-list-option *ngFor="let sp of selectedProductRequest">
+							{{sp.name}}
+						  </mat-list-option>
+						</mat-selection-list>
+					</mat-card-content>
+				</mat-card>
+			</div>
+		</div>
+	  </mat-tab>
+	</mat-tab-group>
+</div>

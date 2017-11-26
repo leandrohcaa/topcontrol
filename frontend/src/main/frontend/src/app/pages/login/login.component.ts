@@ -1,17 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-
-import { AlertService, AuthenticationService } from '../../auth/_services/index';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthenticationService, AlertService } from '../../auth/_services/index';
 
 @Component({
     moduleId: module.id,
     templateUrl: 'login.component.html'
 })
-
 export class LoginComponent implements OnInit {
-    model: any = {};
-    loading = false;
     returnUrl: string;
+    usuario: string;
 
     constructor(
         private route: ActivatedRoute,
@@ -26,17 +23,19 @@ export class LoginComponent implements OnInit {
         // get return url from route parameters or default to '/'
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     }
-
-    login() {
-        this.loading = true;
-        this.authenticationService.login(this.model.username, this.model.password)
+	
+	login(): void{    
+        localStorage.setItem('currentUser', 'leandro.hcaa');
+        this.router.navigate([this.returnUrl]);
+        return;//FIXME
+        this.authenticationService.login('', '')
             .subscribe(
                 data => {
                     this.router.navigate([this.returnUrl]);
                 },
                 error => {
+                    alert(error);
                     this.alertService.error(error);
-                    this.loading = false;
                 });
-    }
+	}
 }

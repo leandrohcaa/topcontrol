@@ -1,2 +1,15 @@
-<alert></alert>
-<router-outlet></router-outlet>
+<div fxLayout="column" fxFlexFill>
+	<mat-toolbar style="padding:0px">
+		<div *ngIf="getCurrentUser()" fxFlexFill fxLayout="row" fxLayoutAlign="start center">
+			<button fxFlex="15" fxFlexFill mat-raised-button color="primary">Pedidos</button>
+			<button fxFlex="15" fxFlexFill mat-raised-button color="primary">Contato</button>
+			<span fxFlex></span>
+			<span>Olá, {{getCurrentUser()}}</span>
+			<button mat-raised-button (click)="logout()">Sair</button>
+		</div>
+	</mat-toolbar>
+	<alert></alert>
+	<div fxFlex>
+		<router-outlet></router-outlet>
+	</div>
+</div>
