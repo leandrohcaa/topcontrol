@@ -1,11 +1,13 @@
 <div fxLayout="column" fxFlexFill>
 	<mat-toolbar style="padding:0px">
 		<div *ngIf="getCurrentUser()" fxFlexFill fxLayout="row" fxLayoutAlign="start center">
-			<button fxFlex="15" fxFlexFill mat-raised-button color="primary">Pedidos</button>
-			<button fxFlex="15" fxFlexFill mat-raised-button color="primary">Contato</button>
+			<div fxFlex="15" fxFlexFill fxLayout="row" fxLayoutAlign="center center" style="cursor: pointer; border-right: 1px solid white;color:gray;" [ngStyle]="getHeaderStyle('')" (click)="navigate('')"><span style='font-family: Roboto,"Helvetica Neue",sans-serif;font-size: 18px;'>Pedidos</span></div>
+			<div fxFlex="15" fxFlexFill fxLayout="row" fxLayoutAlign="center center" style="cursor: pointer; border-right: 1px solid white;color:gray" [ngStyle]="getHeaderStyle('contact')" (click)="navigate('contact')"><span style='font-family: Roboto,"Helvetica Neue",sans-serif;font-size: 18px;'>Contato</span></div>
 			<span fxFlex></span>
-			<span>Ol·, {{getCurrentUser()}}</span>
-			<button mat-raised-button (click)="logout()">Sair</button>
+			<h5 style='font: 500 16px/29px Roboto,"Helvetica Neue",sans-serif;padding-right: 5px;'>Ol√°, {{getCurrentUser()}}</h5>
+			<button mat-icon-button>
+			    <mat-icon aria-label="Sair" (click)="logout()">cancel</mat-icon>
+			</button>
 		</div>
 	</mat-toolbar>
 	<alert></alert>

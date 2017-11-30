@@ -46,8 +46,10 @@ import { routing } from './app.routing';
 import { AlertComponent } from './auth/_directives/index';
 import { AuthGuard } from './auth/_guards/index';
 import { AlertService, AuthenticationService, UserService } from './auth/_services/index';
+import { WebServiceService } from './services/index';
 
 import { RequestComponent } from './pages/request/index';
+import { ContactComponent } from './pages/contact/index';
 import { LoginComponent } from './pages/login/index';
 import { RegisterComponent } from './pages/register/index';
 
@@ -93,6 +95,7 @@ export class MaterialModule {}
     AppComponent,
     AlertComponent,
 	  RequestComponent,
+    ContactComponent,
     LoginComponent,
     RegisterComponent
   ],
@@ -111,7 +114,8 @@ export class MaterialModule {}
         AuthGuard,
         AlertService,
         AuthenticationService,
-        UserService
+        UserService,
+        WebServiceService
     ],
   bootstrap: [AppComponent]
 })

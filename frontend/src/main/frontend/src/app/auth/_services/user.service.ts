@@ -1,30 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 
-import { User } from '../_models/index';
+import { Usuario } from '../../models/index';
+import { WebServiceService } from '../../services/index';
 
 @Injectable()
 export class UserService {
-    constructor(private http: Http) { }
-
-    getAll() {
-        return this.http.get('/api/users', this.jwt()).map((response: Response) => response.json());
-    }
-
+    constructor(
+      private http: Http,
+      private webServiceService: WebServiceService) { }
+    
     getById(id: number) {
-        return this.http.get('/api/users/' + id, this.jwt()).map((response: Response) => response.json());
+        return this.http.get(this.webServiceService.getURL() + 'usuario?id=' + id, this.jwt()).map((response: Response) => response.json());
     }
 
-    create(user: User) {
-        return this.http.post('/api/users', user, this.jwt()).map((response: Response) => response.json());
-    }
-
-    update(user: User) {
-        return this.http.put('/api/users/' + user.id, user, this.jwt()).map((response: Response) => response.json());
-    }
-
-    delete(id: number) {
-        return this.http.delete('/api/users/' + id, this.jwt()).map((response: Response) => response.json());
+    create(user: Usuario) {
+        return this.http.post(this.webServiceService.getURL() + 'usuario/save', [user], this.jwt()).map((response: Response) => response.json());
     }
 
     // private helper methods
@@ -33,7 +24,7 @@ export class UserService {
         // create authorization header with jwt token
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (currentUser && currentUser.token) {
-            let headers = new Headers({ 'Authorization': 'Bearer ' + currentUser.token });
+            let headers = new Headers({ 'Authorization': 'Bearer ' + currentUser.token, 'Content-Type': 'application/json' });
             return new RequestOptions({ headers: headers });
         }
     }

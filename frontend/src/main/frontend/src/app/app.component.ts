@@ -24,5 +24,13 @@ export class AppComponent {
     getCurrentUser(): string {
         return localStorage.getItem('currentUser');
     }
+  
+    getHeaderStyle(page: string): any {
+        return this.router.url == '/' + page ?  { '-webkit-box-shadow': 'inset 0px 0px 25px -7px rgba(0,0,0,0.75)', '-moz-box-shadow': 'inset 0px 0px 25px -7px rgba(0,0,0,0.75)', 'box-shadow': 'inset 0px 0px 25px -7px rgba(0,0,0,0.75)' } : {};
+    }
+  
+    navigate(page: string): void {
+        this.router.navigate(['/' + page]);
+    }
     
 }

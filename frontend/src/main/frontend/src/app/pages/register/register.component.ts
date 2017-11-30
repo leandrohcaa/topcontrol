@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import {FormControl} from '@angular/forms';
 
 import { AlertService, UserService } from '../../auth/_services/index';
+import { Usuario } from '../../models/index';
 
 @Component({
     moduleId: module.id,
@@ -9,25 +11,28 @@ import { AlertService, UserService } from '../../auth/_services/index';
 })
 
 export class RegisterComponent {
-    model: any = {};
-    loading = false;
+    model: Usuario = <Usuario>{};
+    confirmacaoSenha: string;
 
     constructor(
         private router: Router,
         private userService: UserService,
         private alertService: AlertService) { }
 
-    register() {
-        this.loading = true;
-        this.userService.create(this.model)
-            .subscribe(
-                data => {
-                    this.alertService.success('Registration successful', true);
-                    this.router.navigate(['/login']);
-                },
-                error => {
-                    this.alertService.error(error);
-                    this.loading = false;
-                });
+    register() {      
+        if(this.model.senha != this.confirmacaoSenha){
+          this.alertService.error('Confirmação de senha incorreta.');
+        }else{
+          this.model.dono = false;
+          this.userService.create(this.model)
+              .subscribe(
+                  data => {
+                      this.alertService.success('Registration successful', true);
+                      this.router.navigate(['/login']);
+                  },
+                  error => {
+                      this.alertService.error(error);
+                  });
+        }
     }
 }

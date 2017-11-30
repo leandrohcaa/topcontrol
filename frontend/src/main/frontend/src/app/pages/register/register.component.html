@@ -2,23 +2,23 @@
 	<mat-card fxFlex="50">
 		<mat-card-title>Registro de Novo Usuário</mat-card-title>
 		<mat-card-content>
-			<form>
+			<form name="form" (ngSubmit)="f.form.valid && register()" #f="ngForm" novalidate>
 				<div fxLayout="column" fxLayoutAlign="center">
 				  <mat-form-field>
-				    <input matInput placeholder="Nome">
+				    <input matInput placeholder="Nome" name="Nome" [(ngModel)]="model.nome" required>
 				  </mat-form-field>
 				  <mat-form-field>
-				    <input matInput placeholder="Usuário">
+				    <input matInput placeholder="Usuário" name="Usuario" [(ngModel)]="model.usuario" required>
 				  </mat-form-field>
 				  <mat-form-field>
-				    <input matInput type="password" placeholder="Senha">
+				    <input matInput type="password" placeholder="Senha" name="Senha" [(ngModel)]="model.senha" required>
 				  </mat-form-field>
 				  <mat-form-field>
-				    <input matInput type="password" placeholder="Confirmar Senha">
+				    <input matInput type="password" placeholder="Confirmar Senha" name="ConfirmarSenha" [(ngModel)]="confirmacaoSenha" required>
 				  </mat-form-field>
 				  <div fxFlex>				  
 					<button style="float:left" mat-raised-button [routerLink]="['/login']">Voltar</button>
-					<button style="float:right" mat-raised-button>Registrar</button>
+					<button style="float:right" mat-raised-button type="submit">Registrar</button>
 				  </div>
 				</div>
 			</form>
