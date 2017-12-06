@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthenticationService } from './auth/_services/index';
+import { AuthenticationRepository } from './repository/index';
+import { MatDialog } from '@angular/material';
+import { ModalOwner } from './commons/modal/owner/index';
 
 @Component({
   selector: 'app-root',
@@ -13,16 +15,35 @@ export class AppComponent {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private authenticationService: AuthenticationService) { 
+        private authenticationRepository: AuthenticationRepository,
+        public dialog: MatDialog) { 
      }
   
+    getTheme(): string{
+        var owner = this.authenticationRepository.getOwner();
+        if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0){
+            return owner.usuarioNegocioList[0].negocio.theme;
+        }
+        return 'default-theme';
+    }
+  
     logout(): void{
-        this.authenticationService.logout();
+        this.authenticationRepository.logout();
         this.router.navigate(['/login']);
+    }
+	
+    logoutOwner(): void{
+        this.authenticationRepository.logoutOwner();
     }
   
     getCurrentUser(): string {
-        return localStorage.getItem('currentUser');
+        var currentUser = localStorage.getItem('currentUser');
+        return currentUser != null ? JSON.parse(currentUser).nome : '';
+    }
+	
+    getCurrentOwnerUser(): string {
+        var currentOwnerUser = localStorage.getItem('currentOwnerUser');
+        return currentOwnerUser != null ? JSON.parse(currentOwnerUser).nome : '';
     }
   
     getHeaderStyle(page: string): any {
@@ -33,4 +54,9 @@ export class AppComponent {
         this.router.navigate(['/' + page]);
     }
     
+    showOwnerModal() {
+        this.dialog.open(ModalOwner, {
+              data: {  }
+            });
+    }
 }

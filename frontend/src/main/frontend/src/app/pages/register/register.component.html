@@ -11,14 +11,20 @@
 				    <input matInput placeholder="Usuário" name="Usuario" [(ngModel)]="model.usuario" required>
 				  </mat-form-field>
 				  <mat-form-field>
+				    <input matInput placeholder="E-mail" name="E-mail" [(ngModel)]="model.email" required>
+				  </mat-form-field>
+				  <mat-form-field>
+				    <input matInput placeholder="Celular/Telefone" name="Celular/Telefone" [(ngModel)]="model.telefone">
+				  </mat-form-field>
+				  <mat-form-field>
 				    <input matInput type="password" placeholder="Senha" name="Senha" [(ngModel)]="model.senha" required>
 				  </mat-form-field>
 				  <mat-form-field>
 				    <input matInput type="password" placeholder="Confirmar Senha" name="ConfirmarSenha" [(ngModel)]="confirmacaoSenha" required>
 				  </mat-form-field>
 				  <div fxFlex>				  
-					<button style="float:left" mat-raised-button [routerLink]="['/login']">Voltar</button>
-					<button style="float:right" mat-raised-button type="submit">Registrar</button>
+					<button style="float:left" color="primary" mat-raised-button [routerLink]="['/login']">Voltar</button>
+					<button style="float:right" color="primary" mat-raised-button type="submit">Registrar</button>
 				  </div>
 				</div>
 			</form>

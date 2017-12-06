@@ -1,15 +1,18 @@
-export class Product {
+export class Produto {
     id: number;
-    name: string;
-    selectable: boolean;
-    credit: number;
+    nome: string;
+    descricao: string;
+    selecionavel: boolean;
+    credito: number;
+    produtoList: Array<Produto>;
 }
-export class RequestProduct {
-    product: Product;
-    quantity: number = 1;
+export class RequisicaoProduto {
+    produto: Produto;
+    quantidade: number = 1;
+    preco: number = 1;
 }
-export class Request {
+export class Requisicao {
     id: number;
-    datetime: Date;
-    products: Array<RequestProduct>;
+    datahora: Date;
+    requisicaoProdutoList: Array<RequisicaoProduto>;
 }

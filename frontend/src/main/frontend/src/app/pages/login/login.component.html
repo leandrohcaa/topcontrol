@@ -2,17 +2,23 @@
 	<mat-card fxFlex="50">
 		<mat-card-title>Login</mat-card-title>
 		<mat-card-content>
-			<form>
+			<form name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
 				<div fxLayout="column" fxLayoutAlign="center">
 				  <mat-form-field>
-				    <input matInput placeholder="Usuário">
+					  <input matInput [(ngModel)]="model.usuario" required placeholder="Usuário" aria-label="Usuário" [matAutocomplete]="autoUsuario" [formControl]="usuarioInputFormControl" />
+						<mat-autocomplete #autoUsuario="matAutocomplete" (optionSelected)="usuarioOnSelect($event)" 
+							[displayWith]="usuarioWithDisplay">
+						  <mat-option *ngFor="let u of filteredUsuarioList | async" [value]="u">
+							<span>{{ u.usuario }}</span>
+						  </mat-option>
+						</mat-autocomplete>
 				  </mat-form-field>
-				  <mat-form-field>
-				    <input matInput type="password" placeholder="Senha">
+				  <mat-form-field *ngIf="isToShowPassword()">
+				    <input matInput type="password" placeholder="Senha" name="Senha" [(ngModel)]="model.senha" required>
 				  </mat-form-field>
-				  <div fxFlex>
-					<button style="float:left" mat-raised-button [routerLink]="['/register']">Registrar</button>
-					<button style="float:right" mat-raised-button (click)="login()">Entrar</button>
+				  <div fxFlex>				  
+					<button style="float:left" color="primary" mat-raised-button [routerLink]="['/register']">Registrar</button>
+					<button style="float:right" color="primary" mat-raised-button type="submit">Entrar</button>
 				  </div>
 				</div>
 			</form>

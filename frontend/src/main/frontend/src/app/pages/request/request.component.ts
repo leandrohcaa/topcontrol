@@ -6,24 +6,28 @@ import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/map';
-import { Product, Request, RequestProduct } from '../../models/index';
+import { Produto, Requisicao, RequisicaoProduto } from '../../models/index';
+import { ProductRepository } from '../../repository/index';
+import { AlertService } from '../../services/index';
 
 @Component({
     moduleId: module.id,
     templateUrl: 'request.component.html'
 })
 export class RequestComponent implements OnInit {
-    productList : Array<Product>;
+    productList : Array<Produto>;
     preferencesRequestList : Array<Request>;
-    preferencesPrepareList : Array<Product>;
-    selectedProductRequestList : Array<RequestProduct> = [];
-    selectedProductPrepareList : Array<RequestProduct> = [];
+    preferencesPrepareList : Array<Produto>;
+    selectedProductRequestList : Array<RequisicaoProduto> = [];
+    selectedProductPrepareList : Array<RequisicaoProduto> = [];
     productRequestInputFormControl: FormControl;
     productPrepareInputFormControl: FormControl;
     filteredProductRequestList: Observable<any[]>;
     filteredProductPrepareList: Observable<any[]>;
     
-    constructor() {	  
+    constructor(
+        private alertService: AlertService,
+        private productRepository: ProductRepository) {	  
     }   
   
     ngOnInit() {
@@ -37,31 +41,33 @@ export class RequestComponent implements OnInit {
         .startWith(null)
         .map(product => product ? this.filterProduct(product) : this.productList.slice());
 		  
-      this.productList = [
-        <Product>({id: 1, name: 'Herbalife 1',selectable:true}),
-        <Product>({id: 2, name: 'Herbalife 2',selectable:true}),
-        <Product>({id: 3, name: 'Herbalife 3',selectable:true}),
-        <Product>({id: 4, name: 'Herbalife 4',selectable:true}),
-        <Product>({id: 5, name: 'Herbalife 5',selectable:true})];
+      this.productList = [];
+      this.productRepository.getHierarchyList().subscribe(
+            data => {
+                this.productList = JSON.parse(data['_body']);
+            },
+            error => {
+                this.alertService.catchError(error);
+            });
       this.preferencesRequestList = [];
       this.preferencesPrepareList = [];   
     }
   
     filterProduct(productFilter: any) {
-      var productFilterName = typeof(productFilter) == 'string' ? productFilter : productFilter.name;
+      var productFilterName = typeof(productFilter) == 'string' ? productFilter : productFilter.nome;
       return this.productList.filter(product =>
-        product.name.toLowerCase().indexOf(productFilterName.toLowerCase()) >= 0);
+        product.nome.toLowerCase().indexOf(productFilterName.toLowerCase()) >= 0);
     }  
     productRequestOnSelect(evt: any) {
       var selectedProductRequest;
-      var selectedProductExisting = this.selectedProductRequestList.filter(prod => prod.product.id == evt.option.value.id);
+      var selectedProductExisting = this.selectedProductRequestList.filter(prod => prod.produto.id == evt.option.value.id);
       if(selectedProductExisting.length > 0){
         selectedProductRequest = selectedProductExisting[0];
-        selectedProductRequest.quantity++;
+        selectedProductRequest.quantidade++;
       }
       else{
-		selectedProductRequest = <RequestProduct>({product: evt.option.value})
-        selectedProductRequest.quantity = 1;
+		selectedProductRequest = <RequisicaoProduto>({produto: evt.option.value})
+        selectedProductRequest.quantidade = 1;
         this.selectedProductRequestList.push(selectedProductRequest);
       }
       
@@ -69,21 +75,21 @@ export class RequestComponent implements OnInit {
     }
     productPrepareOnSelect(evt: any) {
       var selectedProductRequest;
-      var selectedProductExisting = this.selectedProductPrepareList.filter(prod => prod.product.id == evt.option.value.id);
+      var selectedProductExisting = this.selectedProductPrepareList.filter(prod => prod.produto.id == evt.option.value.id);
       if(selectedProductExisting.length > 0){
         selectedProductRequest = selectedProductExisting[0];
-        selectedProductRequest.quantity++;
+        selectedProductRequest.quantidade++;
       }
       else{
-		selectedProductRequest = <RequestProduct>({product: evt.option.value})
-        selectedProductRequest.quantity = 1;
+		selectedProductRequest = <RequisicaoProduto>({produto: evt.option.value})
+        selectedProductRequest.quantidade = 1;
         this.selectedProductPrepareList.push(selectedProductRequest);
       }
       
       this.productPrepareInputFormControl.setValue(null);
     }
     productWithDisplay(product: any): string {
-      return product ? product.name : '';
+      return product ? product.nome : '';
     }
 	
     inputQuantitySelectedProductRequestOnChange(evt: any) {
@@ -91,10 +97,10 @@ export class RequestComponent implements OnInit {
         var value = Number(evt.currentTarget.value);
         var id = Number(inputName.substring(inputName.indexOf('_') + 1));
         if (value == 0){
-          this.selectedProductRequestList.splice(this.selectedProductRequestList.findIndex(prod => prod.product.id == id), 1);
+          this.selectedProductRequestList.splice(this.selectedProductRequestList.findIndex(prod => prod.produto.id == id), 1);
         }else{
-          var selectedProductExisting = this.selectedProductRequestList.filter(prod => prod.product.id == id)[0];
-          selectedProductExisting.quantity = value;
+          var selectedProductExisting = this.selectedProductRequestList.filter(prod => prod.produto.id == id)[0];
+          selectedProductExisting.quantidade = value;
         }
     }
     inputQuantitySelectedProductPrepareOnChange(evt: any) {
@@ -102,10 +108,10 @@ export class RequestComponent implements OnInit {
         var value = Number(evt.currentTarget.value);
         var id = Number(inputName.substring(inputName.indexOf('_') + 1));
         if (value == 0){
-          this.selectedProductPrepareList.splice(this.selectedProductPrepareList.findIndex(prod => prod.product.id == id), 1);
+          this.selectedProductPrepareList.splice(this.selectedProductPrepareList.findIndex(prod => prod.produto.id == id), 1);
         }else{
-          var selectedProductExisting = this.selectedProductPrepareList.filter(prod => prod.product.id == id)[0];
-          selectedProductExisting.quantity = value;
+          var selectedProductExisting = this.selectedProductPrepareList.filter(prod => prod.produto.id == id)[0];
+          selectedProductExisting.quantidade = value;
         }
     }
   

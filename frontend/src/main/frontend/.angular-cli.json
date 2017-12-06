@@ -19,9 +19,11 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "styles.css"
+        "theme.css"
       ],
-      "scripts": [],
+      "scripts": {
+		  "build-css": "node-sass ./src/styles.scss ./src/theme.css"
+	  },
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

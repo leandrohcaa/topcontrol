@@ -1,0 +1,10 @@
+<div mat-dialog-title>
+	<mat-icon style="color:red; float:right; font-size: 30px;">error</mat-icon>
+	<h4 *ngIf="data.mode=='error'" style="margin: 0px;">Erro</h4>
+</div>
+<div mat-dialog-content>
+  <p>{{data.text}}</p>	
+</div>
+<div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center" fxFlexFill>
+  <button mat-button color="primary" (click)="close()">Ok</button>
+</div>

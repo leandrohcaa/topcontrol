@@ -43,15 +43,17 @@ import {
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
-import { AlertComponent } from './auth/_directives/index';
 import { AuthGuard } from './auth/_guards/index';
-import { AlertService, AuthenticationService, UserService } from './auth/_services/index';
+import { AuthenticationRepository, ProductRepository } from './repository/index';
+import { AlertService } from './services/index';
 import { WebServiceService } from './services/index';
 
 import { RequestComponent } from './pages/request/index';
 import { ContactComponent } from './pages/contact/index';
 import { LoginComponent } from './pages/login/index';
 import { RegisterComponent } from './pages/register/index';
+import { ModalAlert } from './commons/modal/alert/index';
+import { ModalOwner } from './commons/modal/owner/index';
 
 @NgModule({
   exports: [
@@ -93,11 +95,12 @@ export class MaterialModule {}
 @NgModule({
   declarations: [
     AppComponent,
-    AlertComponent,
 	  RequestComponent,
     ContactComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    ModalAlert,
+    ModalOwner
   ],
   imports: [
       BrowserModule,
@@ -113,10 +116,10 @@ export class MaterialModule {}
   providers: [
         AuthGuard,
         AlertService,
-        AuthenticationService,
-        UserService,
+        AuthenticationRepository,
+        ProductRepository,
         WebServiceService
     ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent, ModalAlert, ModalOwner]
 })
 export class AppModule { }
