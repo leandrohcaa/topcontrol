@@ -44,7 +44,7 @@ import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
 import { AuthGuard } from './auth/_guards/index';
-import { AuthenticationRepository, ProductRepository } from './repository/index';
+import { AuthenticationRepository, ProductRepository, RequestRepository } from './repository/index';
 import { AlertService } from './services/index';
 import { WebServiceService } from './services/index';
 
@@ -118,6 +118,7 @@ export class MaterialModule {}
         AlertService,
         AuthenticationRepository,
         ProductRepository,
+        RequestRepository,
         WebServiceService
     ],
   bootstrap: [AppComponent, ModalAlert, ModalOwner]

@@ -25,6 +25,7 @@ export class Negocio {
     theme: string;
 }
 export class UsuarioNegocio {
+    id: number;
     usuario: Usuario;
     negocio: Negocio;
     utilizaSenha: boolean;

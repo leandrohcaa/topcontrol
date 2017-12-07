@@ -3,3 +3,9 @@ router-outlet {
 	display: flex;
 	overflow: hidden;
 }
+
+.menuItem:hover {
+	-webkit-box-shadow: inset 0px 0px 40px -7px rgba(0, 0, 0, 0.75);
+	-moz-box-shadow: inset 0px 0px 40px -7px rgba(0, 0, 0, 0.75);
+	box-shadow: inset 0px 0px 40px -7px rgba(0, 0, 0, 0.75);
+}

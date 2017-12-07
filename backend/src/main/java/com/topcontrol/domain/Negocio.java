@@ -2,6 +2,7 @@ package com.topcontrol.domain;
 
 import javax.persistence.*;
 import lombok.*;
+import com.topcontrol.domain.base.*;
 
 @Entity
 @Data

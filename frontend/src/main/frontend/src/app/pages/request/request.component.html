@@ -36,8 +36,11 @@
 						<span>{{ p.nome }}</span>
 					  </mat-option>
 					</mat-autocomplete>
-				  </mat-form-field>
-				  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button *ngIf="isPrepararButtonVisible()" (click)="preparar()">Preparar</button>	  
+				  </mat-form-field>	
+				  <div>
+					  <button style="float:left; margin-left:30px;" color="primary" mat-raised-button *ngIf="isPrepararButtonVisible()" (click)="clearPreparar()">Limpar</button>	  
+					  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button *ngIf="isPrepararButtonVisible()" (click)="preparar()">Preparar</button>
+				  </div>
 				</form>
 			</div>
 			<div fxFlex="40" style="padding:10px">
@@ -82,7 +85,10 @@
 					  </mat-option>
 					</mat-autocomplete>
 				  </mat-form-field>
-				  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button *ngIf="isReservarButtonVisible()" (click)="reservar()">Reservar</button>	  
+				  <div>
+				  	  <button style="float:left; margin-left:30px;" color="primary" mat-raised-button *ngIf="isReservarButtonVisible()" (click)="clearReservar()">Limpar</button>	  
+					  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button *ngIf="isReservarButtonVisible()" (click)="reservar()">Reservar</button>	  
+				  </div>	
 				</form>
 			</div>
 			<div fxFlex="40" style="padding:10px">

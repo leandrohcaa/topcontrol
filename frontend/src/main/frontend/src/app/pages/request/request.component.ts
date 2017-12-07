@@ -6,8 +6,8 @@ import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/map';
-import { Produto, Requisicao, RequisicaoProduto } from '../../models/index';
-import { ProductRepository } from '../../repository/index';
+import { Produto, Requisicao, ProdutoQuantidadeDTO } from '../../models/index';
+import { ProductRepository, RequestRepository } from '../../repository/index';
 import { AlertService } from '../../services/index';
 
 @Component({
@@ -16,10 +16,10 @@ import { AlertService } from '../../services/index';
 })
 export class RequestComponent implements OnInit {
     productList : Array<Produto>;
-    preferencesRequestList : Array<Request>;
-    preferencesPrepareList : Array<Produto>;
-    selectedProductRequestList : Array<RequisicaoProduto> = [];
-    selectedProductPrepareList : Array<RequisicaoProduto> = [];
+    preferencesRequestList : Array<Requisicao>;
+    preferencesPrepareList : Array<ProdutoQuantidadeDTO>;
+    selectedProductRequestList : Array<ProdutoQuantidadeDTO> = [];
+    selectedProductPrepareList : Array<ProdutoQuantidadeDTO> = [];
     productRequestInputFormControl: FormControl;
     productPrepareInputFormControl: FormControl;
     filteredProductRequestList: Observable<any[]>;
@@ -27,7 +27,8 @@ export class RequestComponent implements OnInit {
     
     constructor(
         private alertService: AlertService,
-        private productRepository: ProductRepository) {	  
+        private productRepository: ProductRepository,
+        private requestRepository: RequestRepository) {	  
     }   
   
     ngOnInit() {
@@ -66,7 +67,7 @@ export class RequestComponent implements OnInit {
         selectedProductRequest.quantidade++;
       }
       else{
-		selectedProductRequest = <RequisicaoProduto>({produto: evt.option.value})
+		    selectedProductRequest = <ProdutoQuantidadeDTO>({produto: evt.option.value})
         selectedProductRequest.quantidade = 1;
         this.selectedProductRequestList.push(selectedProductRequest);
       }
@@ -81,7 +82,7 @@ export class RequestComponent implements OnInit {
         selectedProductRequest.quantidade++;
       }
       else{
-		selectedProductRequest = <RequisicaoProduto>({produto: evt.option.value})
+		    selectedProductRequest = <ProdutoQuantidadeDTO>({produto: evt.option.value})
         selectedProductRequest.quantidade = 1;
         this.selectedProductPrepareList.push(selectedProductRequest);
       }
@@ -125,8 +126,22 @@ export class RequestComponent implements OnInit {
     reservar(): void{
       alert();
     }
+    clearReservar(): void{
+      this.selectedProductRequestList = [];
+    }
     preparar(): void{
-      alert();
+      this.requestRepository.prepare(this.selectedProductPrepareList)
+        .subscribe(
+                  data => {
+                      this.preferencesPrepareList = data;
+                      this.clearPreparar();
+                  },
+                  error => {
+                      this.alertService.catchError(error);
+                  });;
+    }
+    clearPreparar(): void{
+      this.selectedProductPrepareList = [];
     }
   
     preferencesRequestOnClick($event): void{

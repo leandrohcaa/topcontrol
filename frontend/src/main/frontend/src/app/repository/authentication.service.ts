@@ -19,6 +19,13 @@ export class AuthenticationRepository {
       return null;
     }
   
+    getUser(): Usuario {
+      if(localStorage.getItem('currentUser') != null){
+        return JSON.parse(localStorage.getItem('currentUser')) as Usuario;
+      }
+      return null;
+    }
+  
     login(user: Usuario) {
         return this.http.post(this.webServiceService.getURL() + 'usuario/login', user)
             .map((response: Response) => {

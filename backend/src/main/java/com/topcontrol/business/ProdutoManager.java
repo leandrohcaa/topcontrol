@@ -21,8 +21,8 @@ import org.springframework.stereotype.*;
 
 public interface ProdutoManager extends IBusiness<Produto, Long> {
 
-	List<Produto> getProdutoHierarchy();
+	List<Produto> getProdutoHierarchy(Long usuarioNegocioId);
 
-	List<Produto> getProdutoHierarchyList();
+	List<Produto> getProdutoHierarchyList(boolean withProdutoFilhoList, Long usuarioNegocioId);
 
 }

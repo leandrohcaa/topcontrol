@@ -1,5 +1,6 @@
 package com.topcontrol.rest.base;
 
+import com.topcontrol.domain.base.*;
 import com.topcontrol.domain.*;
 import com.topcontrol.business.base.IBusiness;
 

@@ -48,6 +48,8 @@ export class LoginComponent implements OnInit {
     usuarioOnSelect(evt: any) {
   	  var usuarioSelected = evt.option.value;
   	  this.model.usuario = usuarioSelected.usuario;
+      if(!this.isToShowPassword())
+          this.login();
     }
 	
   	login(): void{  

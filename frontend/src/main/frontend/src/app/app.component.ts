@@ -47,7 +47,11 @@ export class AppComponent {
     }
   
     getHeaderStyle(page: string): any {
-        return this.router.url == '/' + page ?  { '-webkit-box-shadow': 'inset 0px 0px 25px -7px rgba(0,0,0,0.75)', '-moz-box-shadow': 'inset 0px 0px 25px -7px rgba(0,0,0,0.75)', 'box-shadow': 'inset 0px 0px 25px -7px rgba(0,0,0,0.75)' } : {};
+        return this.router.url == '/' + page ?  
+        { '-webkit-box-shadow': 'inset 0px 0px 40px -7px rgba(0,0,0,0.75)', 
+          '-moz-box-shadow': 'inset 0px 0px 40px -7px rgba(0,0,0,0.75)',
+           'box-shadow': 'inset 0px 0px 40px -7px rgba(0,0,0,0.75)' 
+           } : {};
     }
   
     navigate(page: string): void {

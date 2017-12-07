@@ -1,5 +1,6 @@
 package com.topcontrol.repository.base;
 
+import com.topcontrol.domain.base.*;
 import com.topcontrol.domain.*;
 import org.springframework.data.jpa.repository.*;
 import java.io.*;

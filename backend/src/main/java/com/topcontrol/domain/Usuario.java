@@ -1,5 +1,6 @@
 package com.topcontrol.domain;
 
+import com.topcontrol.domain.base.*;
 import java.util.List;
 
 import javax.persistence.*;

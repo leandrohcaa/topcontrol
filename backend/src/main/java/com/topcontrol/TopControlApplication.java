@@ -1,12 +1,11 @@
 package com.topcontrol;
 
+import com.topcontrol.domain.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
-
-import com.topcontrol.domain.BaseEntity;
 
 @Configuration
 @EnableAutoConfiguration

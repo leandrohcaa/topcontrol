@@ -1,5 +1,6 @@
 package com.topcontrol.business.base;
 
+import com.topcontrol.domain.base.*;
 import java.io.*;
 import com.topcontrol.domain.*;
 import java.util.List;

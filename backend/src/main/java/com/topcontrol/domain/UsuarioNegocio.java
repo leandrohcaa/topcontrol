@@ -1,6 +1,6 @@
 package com.topcontrol.domain;
 
-import java.io.Serializable;
+import com.topcontrol.domain.base.*;
 import java.util.List;
 
 import javax.persistence.*;
@@ -44,7 +44,7 @@ public class UsuarioNegocio extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "usuario_negocio_usuario", joinColumns = { @JoinColumn(name = "usuario_negocio") }, inverseJoinColumns = { @JoinColumn(name = "usuario") })
 	private List<Usuario> usuarioList;
 

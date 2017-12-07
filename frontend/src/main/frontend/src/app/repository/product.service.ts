@@ -6,17 +6,27 @@ import 'rxjs/add/operator/map'
 
 import { Usuario } from '../models/index';
 import { WebServiceService } from '../services/index';
+import { AuthenticationRepository } from './authentication.service';
 
 @Injectable()
 export class ProductRepository {
     constructor(private http: Http,
-      private webServiceService: WebServiceService) { }
+      private webServiceService: WebServiceService,
+      private authenticationRepository: AuthenticationRepository) { }
   
     getHierarchy() {
-        return this.http.get(this.webServiceService.getURL() + 'produto/hierarchy');
+		var owner = this.authenticationRepository.getOwner();
+		var usuarioNegocioId = null;
+		if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
+			usuarioNegocioId = owner.usuarioNegocioList[0].id;
+        return this.http.get(this.webServiceService.getURL() + 'produto/hierarchy?usuarioNegocioId=' + usuarioNegocioId);
     }
   
     getHierarchyList() {
-        return this.http.get(this.webServiceService.getURL() + 'produto/hierarchyList');
+		var owner = this.authenticationRepository.getOwner();
+		var usuarioNegocioId = null;
+		if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
+			usuarioNegocioId = owner.usuarioNegocioList[0].id;
+        return this.http.get(this.webServiceService.getURL() + 'produto/hierarchyListWithProdutoFilhoList?usuarioNegocioId=' + usuarioNegocioId);
     }
 }
