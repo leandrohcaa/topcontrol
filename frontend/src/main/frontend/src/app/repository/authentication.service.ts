@@ -27,14 +27,14 @@ export class AuthenticationRepository {
     }
   
     login(user: Usuario) {
-        return this.http.post(this.webServiceService.getURL() + 'usuario/login', user)
+        return this.http.post(this.webServiceService.getURL() + 'user/login', user)
             .map((response: Response) => {
                     localStorage.setItem('currentUser', response['_body']);
             });
     }
 
     loginOwner(user: Usuario) {
-        return this.http.post(this.webServiceService.getURL() + 'usuario/loginOwner', user)
+        return this.http.post(this.webServiceService.getURL() + 'user/loginOwner', user)
             .map((response: Response) => {
                     var currentOwnerUser = response['_body'];
                     localStorage.setItem('currentOwnerUser', currentOwnerUser);
@@ -50,10 +50,10 @@ export class AuthenticationRepository {
     }
   
     getById(id: number) {
-        return this.http.get(this.webServiceService.getURL() + 'usuario?id=' + id).map((response: Response) => response.json());
+        return this.http.get(this.webServiceService.getURL() + 'user?id=' + id).map((response: Response) => response.json());
     }
 
     create(user: Usuario) {
-        return this.http.post(this.webServiceService.getURL() + 'usuario/save', [user]);
+        return this.http.post(this.webServiceService.getURL() + 'user/save', [user]);
     }
 }

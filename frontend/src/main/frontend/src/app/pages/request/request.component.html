@@ -1,11 +1,31 @@
 <div fxFlexFill>
-	<mat-tab-group fxFlexFill>
+	<mat-tab-group fxFlexFill [(selectedIndex)]="selectedTabIndex">
 	  <mat-tab label="Acesso Rápido" fxFlexFill>
 		<div fxLayout="row" fxLayoutAlign="center start" fxFlexFill>
 			<div fxFlex="50" style="text-align: center;border-right: 1px solid rgba(0,0,0,.12);" fxFlexFill>
-				<h3 style="margin-bottom: 0px;">Preparação</h3>
+				<h3 *ngIf="!isPreparacaoAcessoRapidoEditing()" style="margin-bottom: 0px;">Preparação</h3>
+				<div *ngIf="isPreparacaoAcessoRapidoEditing()">  
+					<button color="primary" mat-raised-button (click)="preparacaoAcessoRapidoPrepararClick()">Preparar</button>
+				  	<button color="primary" mat-raised-button (click)="preparacaoAcessoRapidoClearClick()">Limpar</button>	  
+				</div> 
 				<div fxLayoutAlign="start start" fxLayoutWrap>
-					<mat-card style="margin:20px" *ngFor="let p of preferencesPrepareList">{{p.nome}}</mat-card>
+					<div *ngFor="let p of preferencesPrepareList">		
+						<div id="clickDivPreparacaoAcessoRapido_{{ p.id }}" style="user-select: none;" (click)="preparacaoAcessoRapidoTabClick($event)">
+							<div *ngIf="p.quantidade > 0" style="float:right; padding: 7px; cursor: pointer;">
+								<div style="background:red; cursor: pointer; width:25px; height:25px;border-radius: 25px;text-align:center;line-height: 25px;font-weight: bold;">
+									<span>{{p.quantidade}}</span>
+								</div>
+							</div>
+							<mat-card style="margin:20px; position: static; cursor: pointer;">
+								<mat-card-title>
+									{{p.nome}}
+								</mat-card-title>
+								<mat-card-footer>
+									Crédito: {{p.credito}}
+								</mat-card-footer>
+							</mat-card>
+						</div>			
+					</div>
 				</div>
 			</div>
 			<div fxFlex="50" style="text-align: center;border-left: 0px solid rgba(0,0,0,.12); margin-left: -1px;" fxFlexFill>
@@ -15,7 +35,7 @@
 						<mat-card-header><mat-card-subtitle>{{r.datahora}}</mat-card-subtitle></mat-card-header>
     					<mat-card-content>
 							<mat-list>
-								<mat-list-item style="height: 0%;" *ngFor="let p of r.products">{{p.nome}}</mat-list-item>
+								<mat-list-item style="height: 0%;" *ngFor="let rp of r.requisicaoProdutoList">{{rp.produto.nome}}</mat-list-item>
 							</mat-list>
 						</mat-card-content>
 					</mat-card>
@@ -29,7 +49,7 @@
 				<form fxFlexFill> 
 				  <span>Escolha o produto desejado: </span>
 				  <mat-form-field>
-					<input matInput placeholder="Produto" aria-label="Produto" [matAutocomplete]="autoPrepare" [formControl]="productPrepareInputFormControl" />
+					<input id="PrepararInputId" matInput placeholder="Produto" aria-label="Produto" [matAutocomplete]="autoPrepare" [formControl]="productPrepareInputFormControl" />
 					<mat-autocomplete #autoPrepare="matAutocomplete" (optionSelected)="productPrepareOnSelect($event)" 
 						[displayWith]="productWithDisplay">
 					  <mat-option *ngFor="let p of filteredProductPrepareList | async" [value]="p">
@@ -38,9 +58,9 @@
 					</mat-autocomplete>
 				  </mat-form-field>	
 				  <div>
-					  <button style="float:left; margin-left:30px;" color="primary" mat-raised-button *ngIf="isPrepararButtonVisible()" (click)="clearPreparar()">Limpar</button>	  
-					  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button *ngIf="isPrepararButtonVisible()" (click)="preparar()">Preparar</button>
-				  </div>
+					  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button [disabled]="!isPrepararButtonVisible()" (click)="preparar()">Preparar</button>
+				  	  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button [disabled]="!isPrepararButtonVisible()" (click)="clearPreparar()">Limpar</button>	  
+					</div>
 				</form>
 			</div>
 			<div fxFlex="40" style="padding:10px">
@@ -56,10 +76,10 @@
 							<mat-list>
 							  <mat-list-item *ngFor="let sp of selectedProductPrepareList">							  
 								<div fxLayout="row" fxLayoutAlign="center center" fxFlexFill>
-									<div fxFlex="90">{{sp.produto.nome}}</div>
+									<div fxFlex="90">{{sp.nome}}</div>
 									<div fxFlex="10">
 										<mat-form-field style="width:100%">
-											<input matInput type="number" name="inputQuantitySelectedProductPrepare_{{sp.produto.id}}" value="{{sp.quantidade}}" (change)="inputQuantitySelectedProductPrepareOnChange($event)">
+											<input matInput type="number" name="inputQuantitySelectedProductPrepare_{{sp.id}}" value="{{sp.quantidade}}" (change)="inputQuantitySelectedProductPrepareOnChange($event)">
 										</mat-form-field>
 									</div>							
 								</div>
@@ -75,20 +95,22 @@
 		<div fxLayout="row" fxLayoutAlign="center start" fxFlexFill>
 			<div fxFlex="30">
 				<form fxFlexFill> 
-				  <span>Escolha o produto desejado: </span>
-				  <mat-form-field>
-					<input matInput placeholder="Produto" aria-label="Produto" [matAutocomplete]="autoRequest" [formControl]="productRequestInputFormControl" />
-					<mat-autocomplete #autoRequest="matAutocomplete" (optionSelected)="productRequestOnSelect($event)" 
-						[displayWith]="productWithDisplay">
-					  <mat-option *ngFor="let p of filteredProductRequestList | async" [value]="p">
-						<span>{{ p.nome }}</span>
-					  </mat-option>
-					</mat-autocomplete>
-				  </mat-form-field>
 				  <div>
-				  	  <button style="float:left; margin-left:30px;" color="primary" mat-raised-button *ngIf="isReservarButtonVisible()" (click)="clearReservar()">Limpar</button>	  
-					  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button *ngIf="isReservarButtonVisible()" (click)="reservar()">Reservar</button>	  
-				  </div>	
+					  <span>Escolha o produto desejado: </span>
+					  <mat-form-field>
+						<input id="ReservarInputId" matInput placeholder="Produto" aria-label="Produto" [matAutocomplete]="autoRequest" [formControl]="productRequestInputFormControl" />
+						<mat-autocomplete #autoRequest="matAutocomplete" (optionSelected)="productRequestOnSelect($event)" 
+							[displayWith]="productWithDisplay">
+						  <mat-option *ngFor="let p of filteredProductRequestList | async" [value]="p">
+							<span>{{ p.nome }}</span>
+						  </mat-option>
+						</mat-autocomplete>
+					  </mat-form-field>
+				  </div>
+				  <div>
+				  	  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button [disabled]="!isReservarButtonVisible()" (click)="reservar()">Reservar</button>	  
+				  	  <button style="float:right; margin-right:30px;" color="primary" mat-raised-button [disabled]="!isReservarButtonVisible()" (click)="clearReservar()">Limpar</button>	  
+					</div>	
 				</form>
 			</div>
 			<div fxFlex="40" style="padding:10px">
@@ -104,10 +126,10 @@
 							<mat-list>
 							  <mat-list-item *ngFor="let sp of selectedProductRequestList">							  
 								<div fxLayout="row" fxLayoutAlign="center center" fxFlexFill>
-									<div fxFlex="90">{{sp.produto.nome}}</div>
+									<div fxFlex="90">{{sp.nome}}</div>
 									<div fxFlex="10">
 										<mat-form-field style="width:100%">
-											<input matInput type="number" name="inputQuantitySelectedProductRequest_{{sp.produto.id}}" value="{{sp.quantidade}}" (change)="inputQuantitySelectedProductRequestOnChange($event)">
+											<input matInput type="number" name="inputQuantitySelectedProductRequest_{{sp.id}}" value="{{sp.quantidade}}" (change)="inputQuantitySelectedProductRequestOnChange($event)">
 										</mat-form-field>
 									</div>							
 								</div>

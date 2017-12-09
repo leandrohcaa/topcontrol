@@ -7,9 +7,7 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @ToString(exclude = { "usuarioNegocioList", "dono" })
-@EqualsAndHashCode(callSuper = false, of = "id")
 @Table(name = "usuario")
 public class Usuario extends BaseEntity<Long> {
 
@@ -47,7 +45,7 @@ public class Usuario extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "dono")
 	private UsuarioNegocio dono;
 
@@ -68,6 +66,12 @@ public class Usuario extends BaseEntity<Long> {
 
 	public Usuario(Long id) {
 		this.id = id;
+	}
+
+	public Usuario(Long id, String usuario, String nome) {
+		this.id = id;
+		this.usuario = usuario;
+		this.nome = nome;
 	}
 
 	public Usuario(Long id, String usuario) {

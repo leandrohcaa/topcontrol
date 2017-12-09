@@ -3,10 +3,10 @@ import { Http, Headers, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 
-
 import { Usuario } from '../models/index';
 import { WebServiceService } from '../services/index';
 import { AuthenticationRepository } from './authentication.service';
+import { GrupoProdutoProdutoDTO } from '../models/index';
 
 @Injectable()
 export class ProductRepository {
@@ -14,19 +14,19 @@ export class ProductRepository {
       private webServiceService: WebServiceService,
       private authenticationRepository: AuthenticationRepository) { }
   
-    getHierarchy() {
-		var owner = this.authenticationRepository.getOwner();
-		var usuarioNegocioId = null;
-		if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
-			usuarioNegocioId = owner.usuarioNegocioList[0].id;
-        return this.http.get(this.webServiceService.getURL() + 'produto/hierarchy?usuarioNegocioId=' + usuarioNegocioId);
+    getProductAndGroup() {
+      var owner = this.authenticationRepository.getOwner();
+      var usuarioNegocioId = null;
+      if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
+        usuarioNegocioId = owner.usuarioNegocioList[0].id;
+          return this.http.get(this.webServiceService.getURL() + 'product/productandgrouplist?usuarioNegocioId=' + usuarioNegocioId);
     }
   
-    getHierarchyList() {
-		var owner = this.authenticationRepository.getOwner();
-		var usuarioNegocioId = null;
-		if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
-			usuarioNegocioId = owner.usuarioNegocioList[0].id;
-        return this.http.get(this.webServiceService.getURL() + 'produto/hierarchyListWithProdutoFilhoList?usuarioNegocioId=' + usuarioNegocioId);
+    getProduct() {
+      var owner = this.authenticationRepository.getOwner();
+      var usuarioNegocioId = null;
+      if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
+        usuarioNegocioId = owner.usuarioNegocioList[0].id;
+          return this.http.get(this.webServiceService.getURL() + 'product/productlist?usuarioNegocioId=' + usuarioNegocioId);
     }
 }

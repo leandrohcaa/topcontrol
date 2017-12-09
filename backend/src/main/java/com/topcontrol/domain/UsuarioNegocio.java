@@ -7,9 +7,7 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @ToString(exclude = { "usuario", "negocio" })
-@EqualsAndHashCode(callSuper = false, of = "id")
 @Table(name = "usuario_negocio")
 public class UsuarioNegocio extends BaseEntity<Long> {
 
@@ -27,13 +25,13 @@ public class UsuarioNegocio extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "usuario", insertable = false, updatable = false)
 	private Usuario usuario;
 
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "negocio", insertable = false, updatable = false)
 	private Negocio negocio;
 
@@ -44,14 +42,29 @@ public class UsuarioNegocio extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "usuario_negocio_usuario", joinColumns = { @JoinColumn(name = "usuario_negocio") }, inverseJoinColumns = { @JoinColumn(name = "usuario") })
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "usuario_negocio_usuario", joinColumns = {
+			@JoinColumn(name = "usuario_negocio") }, inverseJoinColumns = { @JoinColumn(name = "usuario") })
 	private List<Usuario> usuarioList;
 
 	@Getter
 	@Setter
-    @OneToMany(mappedBy = "dono", fetch = FetchType.LAZY)
-    private List<Usuario> clienteList;
+	@OneToMany(mappedBy = "dono", fetch = FetchType.LAZY)
+	private List<Usuario> clienteList;
+
+	@Getter
+	@Setter
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "produto_usuario_negocio", joinColumns = {
+			@JoinColumn(name = "usuario_negocio") }, inverseJoinColumns = { @JoinColumn(name = "produto") })
+	private List<Produto> produtoList;
+
+	@Getter
+	@Setter
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "grupo_produto_usuario_negocio", joinColumns = {
+			@JoinColumn(name = "usuario_negocio") }, inverseJoinColumns = { @JoinColumn(name = "grupo_produto") })
+	private List<GrupoProduto> grupoProdutoList;
 
 	public UsuarioNegocio() {
 	}

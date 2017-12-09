@@ -1,6 +1,7 @@
 package com.topcontrol.rest;
 
 import com.topcontrol.domain.*;
+import com.topcontrol.domain.dto.*;
 import com.topcontrol.infra.BusinessException;
 import com.topcontrol.rest.base.AbstractEntityService;
 import com.topcontrol.business.*;
@@ -10,31 +11,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
-class QuantidadeUsuarioDTO {
-	public List<QuantidadeDTO> quantidadeDTOList;
+class PrepareDTO {
+	public List<GrupoProdutoProdutoDTO> grupoProdutoProdutoDTOList;
 	public Usuario usuario;
 
-	public QuantidadeUsuarioDTO() {
+	public PrepareDTO() {
 	}
 }
 
-class QuantidadeDTO {
-	public Produto produto;
-	public int quantidade;
+class RequestPrepareResponseDTO {
+	public List<GrupoProdutoProdutoDTO> produtoDTOList;
+	public List<Requisicao> requisicaoList;
 
-	public QuantidadeDTO() {
-	}
-
-	public QuantidadeDTO(Produto produto, int quantidade) {
-		this.produto = produto;
-		this.quantidade = quantidade;
+	public RequestPrepareResponseDTO() {
 	}
 }
 
 @RestController
 public class RequisicaoService {
 
-	public static final String PREFIX_WEB_SERVICE = "/api/requisicao";
+	public static final String PREFIX_WEB_SERVICE = "/api/request";
 
 	@Autowired
 	private transient RequisicaoBusiness requisicaoBusiness;
@@ -42,19 +38,42 @@ public class RequisicaoService {
 	@CrossOrigin
 	@ResponseBody
 	@RequestMapping(value = PREFIX_WEB_SERVICE + "/prepare", method = RequestMethod.POST)
-	public List<QuantidadeDTO> prepare(@RequestBody QuantidadeUsuarioDTO dtoObject) {
-		List<QuantidadeDTO> result = new ArrayList<>();
+	public List<GrupoProdutoProdutoDTO> prepare(@RequestBody PrepareDTO dtoObject) {
+		requisicaoBusiness.prepare(dtoObject.grupoProdutoProdutoDTOList, dtoObject.usuario);
+		return requisicaoBusiness.fillPrepareResumeList(dtoObject.usuario);
+	}
 
-		List<Produto> produtoList= new ArrayList<>();
-		for (QuantidadeDTO dto : dtoObject.quantidadeDTOList) {
-			dto.produto.setQuantidade(dto.quantidade);
-			produtoList.add(dto.produto);
+	@CrossOrigin
+	@ResponseBody
+	@RequestMapping(value = PREFIX_WEB_SERVICE + "/request", method = RequestMethod.POST)
+	public RequestPrepareResponseDTO request(@RequestBody PrepareDTO dtoObject) {
+		requisicaoBusiness.request(dtoObject.grupoProdutoProdutoDTOList, dtoObject.usuario);
+
+		RequestPrepareResponseDTO result = new RequestPrepareResponseDTO();
+		result.produtoDTOList = requisicaoBusiness.fillPrepareResumeList(dtoObject.usuario);
+		result.requisicaoList = new ArrayList<>();
+		List<Requisicao> requisicaoAuxList = requisicaoBusiness.findByUsuarioOrderDataHoraDesc(dtoObject.usuario);
+		for (Requisicao requisicao : requisicaoAuxList) {
+			result.requisicaoList
+					.add(new Requisicao(requisicao.getId(), requisicao.getDataHora(), requisicao.getUsuario(),
+							requisicao.getStatus(), requisicao.getReservado(), requisicao.getRequisicaoProdutoList()));
 		}
+		return result;
+	}
 
-		produtoList = requisicaoBusiness.prepare(produtoList, dtoObject.usuario);
-
-		for (Produto produto : produtoList)
-			result.add(new QuantidadeDTO(produto, produto.getQuantidade()));
+	@CrossOrigin
+	@ResponseBody
+	@RequestMapping(value = PREFIX_WEB_SERVICE + "/getprepareandrequestlist", method = RequestMethod.POST)
+	public RequestPrepareResponseDTO getprepareandrequestlist(@RequestBody Usuario usuario) {
+		RequestPrepareResponseDTO result = new RequestPrepareResponseDTO();
+		result.produtoDTOList = requisicaoBusiness.fillPrepareResumeList(usuario);
+		result.requisicaoList = new ArrayList<>();
+		List<Requisicao> requisicaoAuxList = requisicaoBusiness.findByUsuarioOrderDataHoraDesc(usuario);
+		for (Requisicao requisicao : requisicaoAuxList) {
+			result.requisicaoList
+					.add(new Requisicao(requisicao.getId(), requisicao.getDataHora(), requisicao.getUsuario(),
+							requisicao.getStatus(), requisicao.getReservado(), requisicao.getRequisicaoProdutoList()));
+		}
 		return result;
 	}
 }

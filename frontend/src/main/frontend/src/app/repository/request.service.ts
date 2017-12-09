@@ -3,7 +3,7 @@ import { Http, Headers, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 
-import { ProdutoQuantidadeDTO } from '../models/index';
+import { GrupoProdutoProdutoDTO } from '../models/index';
 import { WebServiceService } from '../services/index';
 import { AuthenticationRepository } from './authentication.service';
 
@@ -13,11 +13,27 @@ export class RequestRepository {
       private webServiceService: WebServiceService,
       private authenticationRepository: AuthenticationRepository) { }
    
-    prepare(prepareList: Array<ProdutoQuantidadeDTO>) {
-  		  return this.http.post(this.webServiceService.getURL() + 'requisicao/prepare', 
-          {quantidadeDTOList: prepareList, usuario: this.authenticationRepository.getUser()})
+    prepare(prepareList: Array<GrupoProdutoProdutoDTO>) {
+        return this.http.post(this.webServiceService.getURL() + 'request/prepare', 
+          {grupoProdutoProdutoDTOList: prepareList, usuario: this.authenticationRepository.getUser()})
             .map((response: Response) => {
                     return JSON.parse(response['_body']);
               });
+    }
+  
+    request(requestList: Array<GrupoProdutoProdutoDTO>) {
+        return this.http.post(this.webServiceService.getURL() + 'request/request', 
+          {grupoProdutoProdutoDTOList: requestList, usuario: this.authenticationRepository.getUser()})
+            .map((response: Response) => {
+                    return JSON.parse(response['_body']);
+              });
+    }
+    
+    getPrepareAndRequestList() {
+        return this.http.post(this.webServiceService.getURL() + 'request/getprepareandrequestlist',
+            this.authenticationRepository.getUser())
+              .map((response: Response) => {
+                      return JSON.parse(response['_body']);
+                });
     }
 }

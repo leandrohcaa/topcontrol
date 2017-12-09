@@ -36,14 +36,17 @@ export class LoginComponent implements OnInit {
     		this.usuarioInputFormControl = new FormControl();
     		this.filteredUsuarioList = this.usuarioInputFormControl.valueChanges
     			.startWith(null)
-    			.map(user => user ? this.filterUser(user) : this.getUsuarioList().slice());
+    			.map(user => this.filterUser(user));
     }
 	
 	
     filterUser(userTyped: any) {
-      var usuarioFilterName = typeof(userTyped) == 'string' ? userTyped : userTyped.usuario;
-      return this.getUsuarioList().filter(user =>
-        user.usuario.toLowerCase().indexOf(usuarioFilterName.toLowerCase()) >= 0);
+      if(userTyped != null){
+        var usuarioFilterName = typeof(userTyped) == 'string' ? userTyped : userTyped.usuario;
+        return this.getUsuarioList().filter(user =>
+          user.usuario.toLowerCase().indexOf(usuarioFilterName.toLowerCase()) >= 0);
+      }
+      return this.getUsuarioList();
     }  
     usuarioOnSelect(evt: any) {
   	  var usuarioSelected = evt.option.value;
@@ -84,6 +87,8 @@ export class LoginComponent implements OnInit {
   	}
     
     usuarioWithDisplay(usuario: any): string {
-        return typeof(usuario)=='string' ? usuario : usuario.usuario;
+        if(usuario != null)
+          return typeof(usuario)=='string' ? usuario : usuario.usuario;
+        return null;
     }
 }

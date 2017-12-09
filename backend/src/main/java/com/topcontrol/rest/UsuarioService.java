@@ -13,7 +13,7 @@ import java.util.*;
 @RestController
 public class UsuarioService extends AbstractEntityService<Usuario, Long> {
 
-	public static final String PREFIX_WEB_SERVICE = "/api/usuario";
+	public static final String PREFIX_WEB_SERVICE = "/api/user";
 
 	@Autowired
 	private transient UsuarioBusiness usuarioBusiness;

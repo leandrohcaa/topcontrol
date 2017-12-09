@@ -26,20 +26,16 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 
 	@Autowired
 	private transient ProdutoRepository produtoRepository;
+	@Autowired
+	private transient GrupoProdutoRepository grupoProdutoRepository;
+
+	private List<Produto> produtoList;
+	private List<GrupoProduto> grupoProdutoList;
 
 	@PostConstruct
 	public void init() {
-		List<Produto> produtoHierarchyResult = produtoRepository.findHierarchy();
-		for (Produto produto : produtoHierarchyResult)
-			setVoidEntity(produto);
-		produtoHierarchy = produtoHierarchyResult;
-	}
-
-	private void setVoidEntity(Produto produto) {
-		produto.setProdutoPai(produto.getProdutoPai() != null ? new Produto(produto.getProdutoPai().getId()) : null);
-		if (produto.getProdutoFilhoList() != null)
-			for (Produto produtoFilho : produto.getProdutoFilhoList())
-				setVoidEntity(produtoFilho);
+		produtoList = getProdutoList(null);
+		grupoProdutoList = getGrupoProdutoList(null);
 	}
 
 	@Override
@@ -47,49 +43,71 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 		return produtoRepository;
 	}
 
-	private List<Produto> produtoHierarchy;
-
 	@Override
-	public List<Produto> getProdutoHierarchy(Long usuarioNegocioId) {
-		return filterByUsuarioNegocio(new ArrayList<>(produtoHierarchy), usuarioNegocioId);
+	public void clearCache() {
+		produtoList = null;
+		grupoProdutoList = null;
 	}
 
 	@Override
-	public List<Produto> getProdutoHierarchyList(boolean withProdutoFilhoList, Long usuarioNegocioId) {
-		List<Produto> produtoListReturn = new ArrayList<>();
-		fillList(produtoListReturn, new ArrayList<>(produtoHierarchy), withProdutoFilhoList);
-		return filterByUsuarioNegocio(new ArrayList<>(produtoListReturn), usuarioNegocioId);
+	public List<Produto> getProdutoList(Long usuarioNegocioId) {
+		if (produtoList == null) {
+			synchronized (ProdutoManagerImpl.class) {
+				if (produtoList == null) {
+					produtoList = produtoRepository.findForCache();
+
+					List<CaracteristicaProduto> caracteristcaList = produtoRepository
+							.findCaracteristicaProdutoForCache();
+					for (Produto produto : produtoList) {
+						produto.setCaracteristicaProdutoList(caracteristcaList.stream()
+								.filter(c -> c.getProduto().equals(produto)).distinct().collect(Collectors.toList()));
+					}
+				}
+			}
+		}
+
+		return filterProdutoByUsuarioNegocio(new ArrayList<>(produtoList), usuarioNegocioId);
 	}
 
-	private List<Produto> filterByUsuarioNegocio(List<Produto> produtoListResult, Long usuarioNegocioId) {
+	@Override
+	public List<GrupoProduto> getGrupoProdutoList(Long usuarioNegocioId) {
+		if (grupoProdutoList == null) {
+			synchronized (ProdutoManagerImpl.class) {
+				if (grupoProdutoList == null) {
+					grupoProdutoList = grupoProdutoRepository.findForCache();
+
+					List<Produto> produtoList = grupoProdutoRepository.findProdutoForCache();
+					for (GrupoProduto grupoProduto : grupoProdutoList) {
+						grupoProduto.setProdutoList(produtoList.stream()
+								.filter(p -> p.getGrupoProdutoList().stream()
+										.filter(gp -> gp.getId().equals(grupoProduto.getId())).count() > 0)
+								.distinct().collect(Collectors.toList()));
+					}
+				}
+			}
+		}
+		return filterGrupoProdutoByUsuarioNegocio(new ArrayList<>(grupoProdutoList), usuarioNegocioId);
+	}
+
+	private List<Produto> filterProdutoByUsuarioNegocio(List<Produto> produtoListResult, Long usuarioNegocioId) {
 		if (usuarioNegocioId != null) {
 			produtoListResult = produtoListResult.stream()
 					.filter(p -> !CollectionUtils.isEmpty(p.getUsuarioNegocioList()) && p.getUsuarioNegocioList()
 							.stream().map(un -> un.getId()).collect(Collectors.toList()).contains(usuarioNegocioId))
 					.collect(Collectors.toList());
-
-			for (Produto produto : produtoListResult) {
-				if (produto.getProdutoFilhoList() != null) {
-					produto.setProdutoFilhoList(
-							filterByUsuarioNegocio(produto.getProdutoFilhoList(), usuarioNegocioId));
-				}
-			}
 		}
 		return produtoListResult;
 	}
 
-	private void fillList(List<Produto> produtoListReturn, List<Produto> produtoListIter,
-			boolean withProdutoFilhoList) {
-		for (Produto produto : produtoListIter) {
-			if (produto.getProdutoFilhoList() != null)
-				fillList(produtoListReturn, produto.getProdutoFilhoList(), withProdutoFilhoList);
+	private List<GrupoProduto> filterGrupoProdutoByUsuarioNegocio(List<GrupoProduto> grupoProdutoListResult,
+			Long usuarioNegocioId) {
+		if (usuarioNegocioId != null) {
+			grupoProdutoListResult = grupoProdutoListResult.stream()
+					.filter(p -> !CollectionUtils.isEmpty(p.getUsuarioNegocioList()) && p.getUsuarioNegocioList()
+							.stream().map(un -> un.getId()).collect(Collectors.toList()).contains(usuarioNegocioId))
+					.collect(Collectors.toList());
 		}
-
-		produtoListIter.stream().map(p -> {
-			p = (Produto) p.clone();
-			if (!withProdutoFilhoList)
-				p.setProdutoFilhoList(null);
-			return p;
-		}).forEach(p -> produtoListReturn.add(p));
+		return grupoProdutoListResult;
 	}
+
 }

@@ -10,11 +10,12 @@ import javax.persistence.MappedSuperclass;
 import org.springframework.beans.BeanUtils;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @MappedSuperclass
-@Data
+@EqualsAndHashCode(callSuper = false, of = { "id" })
 public abstract class BaseEntity<I extends Serializable> implements Serializable {
 
 	@Getter
@@ -23,6 +24,11 @@ public abstract class BaseEntity<I extends Serializable> implements Serializable
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	protected Long id;
+
+	@SuppressWarnings("rawtypes")
+	public boolean equals(BaseEntity be) {
+		return this.getId().equals(be.getId());
+	}
 
 	public BaseEntity() {
 		super();

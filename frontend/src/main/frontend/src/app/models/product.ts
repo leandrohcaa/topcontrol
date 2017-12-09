@@ -4,13 +4,21 @@ export class Produto {
     id: number;
     nome: string;
     descricao: string;
-    selecionavel: boolean;
-    produtoPai: Produto;
-    produtoFilhoList: Array<Produto>;
+    preco: number;
+    caracteristicaProdutoList: Array<CaracteristicaProduto>;
 }
-export class ProdutoQuantidadeDTO {
+export class GrupoProduto {
+    id: number;
+    nome: string;
+    descricao: string;
+    preco: number;
+    produtoList: Array<Produto>;
+}
+export class CaracteristicaProduto {
+    id: number;
     produto: Produto;
-    quantidade: number;
+    nome: string;
+    descricao: string;
 }
 export class Requisicao {
     id: number;
@@ -23,11 +31,30 @@ export class RequisicaoProduto {
     id: number;
     requisicao: Requisicao;
     produto: Produto;
-    preco: number = 1;
+    grupoProduto: GrupoProduto;
+    preco: number;
     statusPreparo: string;
     statusPagamento: string;
     usuarioPreparo: Usuario;
+    usuarioPagamento: Usuario;
     dataHoraPreparo: Date;
-    dataHoraEntrega: Date;
+    dataHoraPagamento: Date;
     urgencia: string;
+}
+
+
+export class GrupoProdutoProdutoDTO {
+    id: number;
+    nome: string;
+    descricao: string;
+    preco: number;
+    tipo: string;
+    quantidade: number;
+    credito: number;
+    caracteristicaProdutoDTOList: Array<CaracteristicaProdutoDTO>;
+}
+export class CaracteristicaProdutoDTO {
+    id: number;
+    nome: string;
+    descricao: string;
 }

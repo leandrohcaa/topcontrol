@@ -5,9 +5,7 @@ import lombok.*;
 import com.topcontrol.domain.base.*;
 
 @Entity
-@Data
 @ToString(exclude = { })
-@EqualsAndHashCode(callSuper = false, of = "id")
 @Table(name = "negocio")
 public class Negocio extends BaseEntity<Long> {
 

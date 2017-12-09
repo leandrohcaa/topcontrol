@@ -11,6 +11,9 @@ import com.topcontrol.domain.*;
 
 public interface ProdutoRepository extends BaseRepository<Produto, Long>, ProdutoRepositoryCustom {
 
-	@Query(" select p from Produto p where p.produtoPai is null ")
-	List<Produto> findHierarchy();
+	@Query(" select p from Produto p join fetch p.usuarioNegocioList un ")
+	List<Produto> findForCache();
+
+	@Query(" select c from CaracteristicaProduto c join c.produto p ")
+	List<CaracteristicaProduto> findCaracteristicaProdutoForCache();
 }
