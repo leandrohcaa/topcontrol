@@ -2,6 +2,7 @@ package com.topcontrol.rest;
 
 import com.topcontrol.domain.*;
 import com.topcontrol.domain.dto.GrupoProdutoProdutoDTO;
+import com.topcontrol.domain.dto.RequisicaoDTO;
 import com.topcontrol.infra.BusinessException;
 import com.topcontrol.rest.base.AbstractEntityService;
 import com.topcontrol.business.*;
@@ -9,7 +10,17 @@ import com.topcontrol.business.base.IBusiness;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
+
+class SaveImageDTO {
+	public GrupoProdutoProdutoDTO product;
+	public String image;
+
+	public SaveImageDTO() {
+	}
+}
 
 @RestController
 public class ProdutoService {
@@ -70,5 +81,11 @@ public class ProdutoService {
 	@RequestMapping(value = PREFIX_WEB_SERVICE + "/clearCache", method = RequestMethod.GET)
 	public void clearCache() {
 		produtoManager.clearCache();
+	}
+
+	@CrossOrigin
+	@RequestMapping(value = PREFIX_WEB_SERVICE + "/saveImage", method = RequestMethod.POST)
+	public void saveImage(@RequestBody SaveImageDTO request) {
+		produtoManager.saveImage(request.product, request.image);
 	}
 }

@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule }    from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { ImageUploadModule } from "angular2-image-upload";
 
 import {
     MatAutocompleteModule,
@@ -55,9 +56,9 @@ import { DataConfigComponent } from './pages/dataConfig/index';
 
 import { ModalAlert } from './commons/modal/alert/index';
 import { ModalCaracteristicaPrepare } from './commons/modal/caracteristicaPrepare/index';
+import { ModalDataConfigUploadImage } from './commons/modal/dataConfigUploadImage/index';
 import { ModalLoading } from './commons/modal/loading/index';
 import { ModalOwner } from './commons/modal/owner/index';
-
 
 @NgModule({
     exports: [
@@ -100,7 +101,7 @@ export class MaterialModule { }
     declarations: [
         AppComponent,
         RequestComponent, ContactComponent, LoginComponent, RegisterComponent, DataConfigComponent,
-        ModalAlert, ModalOwner, ModalLoading, ModalCaracteristicaPrepare
+        ModalAlert, ModalOwner, ModalLoading, ModalCaracteristicaPrepare, ModalDataConfigUploadImage
     ],
     imports: [
         BrowserModule,
@@ -111,13 +112,14 @@ export class MaterialModule { }
         HttpModule,
         routing,
         MaterialModule,
-        FlexLayoutModule
+        FlexLayoutModule,
+        ImageUploadModule.forRoot()
     ],
     providers: [
         AuthGuard,
         AuthenticationRepository, ProductRepository, RequestRepository,
         AlertService, WebServiceService, PoolService, CommonsService
     ],
-    bootstrap: [AppComponent, ModalAlert, ModalOwner, ModalLoading, ModalCaracteristicaPrepare]
+    bootstrap: [AppComponent, ModalAlert, ModalOwner, ModalLoading, ModalCaracteristicaPrepare, ModalDataConfigUploadImage]
 })
 export class AppModule { }

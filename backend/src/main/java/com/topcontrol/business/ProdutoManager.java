@@ -1,6 +1,7 @@
 package com.topcontrol.business;
 
 import com.topcontrol.domain.*;
+import com.topcontrol.domain.dto.GrupoProdutoProdutoDTO;
 import com.topcontrol.infra.BusinessException;
 import com.topcontrol.repository.*;
 import com.topcontrol.repository.base.*;
@@ -38,5 +39,7 @@ public interface ProdutoManager extends IBusiness<Produto, Long> {
 	CaracteristicaProduto getCaracteristicaProduto(Long id);
 
 	List<CaracteristicaProduto> getCaracteristicaProdutoList();
+
+	void saveImage(GrupoProdutoProdutoDTO dto, String image);
 
 }

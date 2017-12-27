@@ -1,0 +1,14 @@
+<div mat-dialog-title>
+	<h4 style="margin: 0px;">Upload de Imagem</h4>
+</div>
+<form name="form" (ngSubmit)="f.form.valid && confirm()" #f="ngForm" novalidate>
+	<div mat-dialog-content>
+		<image-upload [max]="1" [buttonCaption]="'Buscar'" [dropBoxMessage]="'Arraste sua imagem aqui!'"
+		 	[fileTooLargeMessage]="'Tamanho de imagem não permitida.'" [clearButtonCaption]="'Limpar'"
+		 	(uploadFinished)="onUploadFinished($event)"></image-upload>
+	</div>
+	<div mat-dialog-actions fxLayout="row" fxLayoutAlign="center center" fxFlexFill>
+	  <button mat-button color="primary" (click)="close()">Cancelar</button>
+	  <button mat-button color="primary" type="submit">Confirmar</button>
+	</div>
+</form>

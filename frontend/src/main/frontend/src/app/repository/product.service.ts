@@ -35,4 +35,9 @@ export class ProductRepository {
                 return this.webServiceService.catchResponseGET(response);
             });
     }
+    
+    saveImage(product: GrupoProdutoProdutoDTO, image: string) {
+        return this.http.post(this.webServiceService.getURL() + 'product/saveImage',
+            { product: product, image: image });
+    }
 }

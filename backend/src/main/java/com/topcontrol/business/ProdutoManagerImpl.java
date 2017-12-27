@@ -1,6 +1,7 @@
 package com.topcontrol.business;
 
 import com.topcontrol.domain.*;
+import com.topcontrol.domain.dto.GrupoProdutoProdutoDTO;
 import com.topcontrol.infra.BusinessException;
 import com.topcontrol.repository.*;
 import com.topcontrol.repository.base.*;
@@ -183,4 +184,9 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 		return grupoProdutoListResult;
 	}
 
+	@Override
+	public void saveImage(GrupoProdutoProdutoDTO dto, String image) {
+		String a = image;
+		String b = a;
+	}
 }
