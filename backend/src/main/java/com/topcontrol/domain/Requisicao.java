@@ -33,12 +33,6 @@ public class Requisicao extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-	@Column(name = "status", nullable = false, length = 2)
-	@Enumerated(EnumType.STRING)
-	private IndicadorRequisicaoStatus status;
-
-	@Getter
-	@Setter
 	@Column(name = "reservado", nullable = false)
 	private Boolean reservado;
 
@@ -54,13 +48,12 @@ public class Requisicao extends BaseEntity<Long> {
 		this.id = id;
 	}
 
-	public Requisicao(Long id, LocalDateTime dataHora, Usuario usuario, IndicadorRequisicaoStatus status,
-			Boolean reservado, List<RequisicaoProduto> requisicaoProdutoList) {
+	public Requisicao(Long id, LocalDateTime dataHora, Usuario usuario, Boolean reservado,
+			List<RequisicaoProduto> requisicaoProdutoList) {
 		super();
 		this.id = id;
 		this.dataHora = dataHora;
 		this.usuario = new Usuario(usuario.getId(), usuario.getNome(), usuario.getUsuario());
-		this.status = status;
 		this.reservado = reservado;
 
 		this.requisicaoProdutoList = new ArrayList<>();

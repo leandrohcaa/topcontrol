@@ -24,7 +24,6 @@ export class Requisicao {
     id: number;
     dataHora: Date;
     usuario: Usuario;
-    status: string;
     requisicaoProdutoList: Array<RequisicaoProduto>;
 }
 export class RequisicaoProduto {
@@ -43,6 +42,25 @@ export class RequisicaoProduto {
 }
 
 
+export class RequisicaoDTO {
+    id: number;
+    datahora: Date;
+    usuario: Usuario;
+    grupoProdutoProdutoDTOResume: string;
+    grupoProdutoProdutoDTOList: Array<GrupoProdutoProdutoDTO>;
+}
+export class GrupoCaracteristicaProdutoDTO {
+    id: number;
+    nome: string;
+    pergunta: string;
+    tipo: string;
+    caracteristicaProdutoDTOList: Array<CaracteristicaProdutoDTO>;
+}
+export class CaracteristicaProdutoDTO {
+    id: number;
+    nome: string;
+    descricao: string;
+}
 export class GrupoProdutoProdutoDTO {
     id: number;
     nome: string;
@@ -50,11 +68,16 @@ export class GrupoProdutoProdutoDTO {
     preco: number;
     tipo: string;
     quantidade: number;
-    credito: number;
+    emPreparacao: number;
+    aPagar: number;
+    aConsumir: number;
+    datahora: Date;
+    caracteristicaProdutoDTOResume: string;
+    requisicaoProdutoId: number;
+    estadoExibicao: string = 'visible';
+    imagem: string;
+    usuarioRequisicao: string;
+    pendenteFillCaracteristicas: boolean;
+    grupoCaracteristicaProdutoDTOList: Array<GrupoCaracteristicaProdutoDTO>;
     caracteristicaProdutoDTOList: Array<CaracteristicaProdutoDTO>;
-}
-export class CaracteristicaProdutoDTO {
-    id: number;
-    nome: string;
-    descricao: string;
 }

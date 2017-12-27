@@ -3,22 +3,23 @@ package com.topcontrol.domain;
 import java.util.List;
 
 import javax.persistence.*;
-
 import lombok.*;
 
 @Entity
-@ToString(exclude = {})
+@ToString(exclude = { })
 @Table(name = "caracteristica_produto")
 public class CaracteristicaProduto extends BaseEntity<Long> {
 
-	private static final long serialVersionUID = 1L;
+	public CaracteristicaProduto(Long id, String nome, String descricao) {
+		super(id);
+		this.nome = nome;
+		this.descricao = descricao;
+	}
 
-	@Getter
-	@Setter
-	@ManyToOne
-	@JoinColumn(name = "produto", nullable = false)
-	private Produto produto;
-	
+	private static final long serialVersionUID = 1L;
+	public static final Long ID_NORMAL = 7L;
+	public static final Long ID_URGENTE = 8L;
+
 	@Getter
 	@Setter
 	@Column(name = "nome", nullable = false)
@@ -29,18 +30,23 @@ public class CaracteristicaProduto extends BaseEntity<Long> {
 	@Column(name = "descricao", nullable = true)
 	private String descricao;
 
-	public CaracteristicaProduto() {
-	}
+	@Getter
+	@Setter
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "grupo_caracteristica_caracteristica_produto", joinColumns = {
+			@JoinColumn(name = "caracteristica_produto") }, inverseJoinColumns = { @JoinColumn(name = "grupo_caracteristica_produto") })
+	private List<GrupoCaracteristicaProduto> grupoCaracteristicaProdutoList;
 
+	@Getter
+	@Setter
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "requisicao_produto_caracteristica_produto", joinColumns = {
+			@JoinColumn(name = "caracteristica_produto") }, inverseJoinColumns = { @JoinColumn(name = "requisicao_produto") })
+	private List<RequisicaoProduto> requisicaoProdutoList;
+		
+	public CaracteristicaProduto() {}
+	
 	public CaracteristicaProduto(Long id) {
-		this.id = id;
-	}
-
-	public CaracteristicaProduto(Long id, Produto produto, String nome, String descricao) {
-		super();
-		this.id = id;
-		this.produto = produto;
-		this.nome = nome;
-		this.descricao = descricao;
-	}
+        this.id = id;
+    }
 }

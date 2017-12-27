@@ -58,7 +58,8 @@ public class Usuario extends BaseEntity<Long> {
 		this.email = email;
 		this.telefone = telefone;
 		this.usuarioNegocioList = usuarioNegocioList;
-		this.dono = dono;
+		if (dono != null)
+			this.dono = new UsuarioNegocio(dono.getId());
 	}
 
 	public Usuario() {

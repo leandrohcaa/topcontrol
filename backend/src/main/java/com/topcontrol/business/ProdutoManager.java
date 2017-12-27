@@ -27,4 +27,16 @@ public interface ProdutoManager extends IBusiness<Produto, Long> {
 
 	void clearCache();
 
+	Produto getProduto(Long id);
+
+	GrupoProduto getGrupoProduto(Long id);
+
+	GrupoCaracteristicaProduto getGrupoCaracteristicaProduto(Long id);
+
+	List<GrupoCaracteristicaProduto> getGrupoCaracteristicaProdutoList();
+
+	CaracteristicaProduto getCaracteristicaProduto(Long id);
+
+	List<CaracteristicaProduto> getCaracteristicaProdutoList();
+
 }

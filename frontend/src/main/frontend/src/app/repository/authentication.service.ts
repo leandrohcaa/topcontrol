@@ -29,15 +29,18 @@ export class AuthenticationRepository {
     login(user: Usuario) {
         return this.http.post(this.webServiceService.getURL() + 'user/login', user)
             .map((response: Response) => {
-                    localStorage.setItem('currentUser', response['_body']);
+                var result = this.webServiceService.catchResponsePOST(response);
+                localStorage.setItem('currentUser', JSON.stringify(result));
+                return result;
             });
     }
 
     loginOwner(user: Usuario) {
         return this.http.post(this.webServiceService.getURL() + 'user/loginOwner', user)
             .map((response: Response) => {
-                    var currentOwnerUser = response['_body'];
-                    localStorage.setItem('currentOwnerUser', currentOwnerUser);
+                var result = this.webServiceService.catchResponsePOST(response);
+                localStorage.setItem('currentOwnerUser', JSON.stringify(result));
+                return result;
             });
     }
  
@@ -48,12 +51,11 @@ export class AuthenticationRepository {
     logoutOwner() {
         localStorage.removeItem('currentOwnerUser');
     }
-  
-    getById(id: number) {
-        return this.http.get(this.webServiceService.getURL() + 'user?id=' + id).map((response: Response) => response.json());
-    }
 
     create(user: Usuario) {
-        return this.http.post(this.webServiceService.getURL() + 'user/save', [user]);
+        return this.http.post(this.webServiceService.getURL() + 'user/save', [user])
+            .map((response: Response) => {
+                return this.webServiceService.catchResponsePOST(response);
+            });
     }
 }

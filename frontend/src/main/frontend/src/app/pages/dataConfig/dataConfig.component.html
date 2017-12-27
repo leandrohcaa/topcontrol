@@ -1,0 +1,28 @@
+<div fxFlexFill>
+	<mat-tab-group fxFlexFill [(selectedIndex)]="selectedTabIndex">
+		<mat-tab label="Produtos" fxFlexFill>
+			<mat-table #table [dataSource]="productDataSource">
+
+				<ng-container matColumnDef="id">
+					<mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+					<mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+				</ng-container>	
+				<ng-container matColumnDef="nome">
+					<mat-header-cell *matHeaderCellDef>Nome</mat-header-cell>
+					<mat-cell *matCellDef="let element"> {{element.nome}} </mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="descricao">
+					<mat-header-cell *matHeaderCellDef>Descrição</mat-header-cell>
+					<mat-cell *matCellDef="let element"> {{element.descricao}} </mat-cell>
+				</ng-container>
+				<ng-container matColumnDef="uploadImage">
+					<mat-header-cell *matHeaderCellDef>Imagem</mat-header-cell>
+					<mat-cell *matCellDef="let element"><mat-icon style="cursor: pointer;" (click)="productUploadImage(element)">archive</mat-icon></mat-cell>
+				</ng-container>
+
+				<mat-header-row *matHeaderRowDef="productDisplayedColumns"></mat-header-row>
+				<mat-row *matRowDef="let row; columns: productDisplayedColumns;"></mat-row>
+			</mat-table>
+		</mat-tab>
+	</mat-tab-group>
+</div>

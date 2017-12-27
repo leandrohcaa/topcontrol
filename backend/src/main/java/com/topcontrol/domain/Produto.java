@@ -38,11 +38,6 @@ public class Produto extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-	@OneToMany(mappedBy = "produto", fetch = FetchType.LAZY)
-	private List<CaracteristicaProduto> caracteristicaProdutoList;
-
-	@Getter
-	@Setter
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "grupo_produto_produto", joinColumns = { @JoinColumn(name = "produto") }, inverseJoinColumns = {
 			@JoinColumn(name = "grupo_produto") })
@@ -54,6 +49,13 @@ public class Produto extends BaseEntity<Long> {
 	@JoinTable(name = "produto_usuario_negocio", joinColumns = { @JoinColumn(name = "produto") }, inverseJoinColumns = {
 			@JoinColumn(name = "usuario_negocio") })
 	private List<UsuarioNegocio> usuarioNegocioList;
+
+	@Getter
+	@Setter
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "produto_grupo_caracteristica_produto", joinColumns = {
+			@JoinColumn(name = "produto") }, inverseJoinColumns = { @JoinColumn(name = "grupo_caracteristica_produto") })
+	private List<GrupoCaracteristicaProduto> grupoCaracteristicaProdutoList;
 
 	public Produto() {
 	}

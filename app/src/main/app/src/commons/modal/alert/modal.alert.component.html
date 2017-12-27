@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <span *ngIf="data.mode=='error'" style="color:red">Erro</span>
+    </ion-title>
+    <ion-buttons start>
+     <button ion-button icon-left (click)="dismiss()">
+	  <ion-icon name="arrow-back"></ion-icon>
+	</button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+	<span>{{data.text}}</span>
+</ion-content>

@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,16 +31,22 @@ import org.springframework.stereotype.*;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
 public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> implements RequisicaoBusiness {
 
 	@Autowired
-	private transient ProdutoManager produtoManager;
-	@Autowired
 	private transient RequisicaoRepository requisicaoRepository;
 	@Autowired
-	private transient RequisicaoProdutoRepository requisicaoProdutoRepository;
+	private transient ProdutoManager produtoManager;
+	@Autowired
+	private transient RequisicaoProdutoBusiness requisicaoProdutoBusiness;
+	@Autowired
+	private transient CaracteristicaProdutoBusiness caracteristicaProdutoBusiness;
 
 	@Override
 	public BaseRepository<Requisicao, Long> getRepository() {
@@ -50,7 +57,7 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 	public void prepare(List<GrupoProdutoProdutoDTO> produtoDTOList, Usuario usuario) {
 		List<Long> produtoDistinctIdList = produtoDTOList.stream().map(d -> d.getId()).distinct()
 				.collect(Collectors.toList());
-		List<RequisicaoProduto> notPreparedList = requisicaoProdutoRepository
+		List<RequisicaoProduto> notPreparedList = requisicaoProdutoBusiness
 				.findNotEmPreparacaoByUsuarioProduto(usuario.getId(), produtoDistinctIdList);
 
 		List<RequisicaoProduto> requisicaoProdutoToUpdateList = new ArrayList<>();
@@ -58,11 +65,13 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 		for (GrupoProdutoProdutoDTO produtoDTO : produtoDTOList) {
 			for (int i = 0; i < produtoDTO.getQuantidade(); i++) {
 				Optional<RequisicaoProduto> requisicaoProdutoToUpdateOptional = notPreparedList.stream()
-						.filter(rp -> rp.getProduto().equals(produtoDTO.getId())).findFirst();
+						.filter(rp -> rp.getProduto().getId().equals(produtoDTO.getId())).findFirst();
 				if (requisicaoProdutoToUpdateOptional.isPresent()) {
 					RequisicaoProduto requisicaoProduto = notPreparedList
 							.remove(notPreparedList.indexOf(requisicaoProdutoToUpdateOptional.get()));
 					requisicaoProduto.setStatusPreparo(IndicadorRequisicaoProdutoStatusPreparo.EP);
+					requisicaoProduto.setDataHoraRequisicaoPreparacao(LocalDateTime.now());
+					requisicaoProduto.setCaracteristicaProdutoDTOList(produtoDTO.getCaracteristicaProdutoDTOList());
 					requisicaoProdutoToUpdateList.add(requisicaoProduto);
 				} else {
 					RequisicaoProduto requisicaoProduto = new RequisicaoProduto();
@@ -71,6 +80,8 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 					requisicaoProduto.setUrgencia(IndicadorRequisicaoProdutoUrgencia.NO); // TODO
 					requisicaoProduto.setStatusPreparo(IndicadorRequisicaoProdutoStatusPreparo.EP);
 					requisicaoProduto.setStatusPagamento(IndicadorRequisicaoProdutoStatusPagamento.NP);
+					requisicaoProduto.setDataHoraRequisicaoPreparacao(LocalDateTime.now());
+					requisicaoProduto.setCaracteristicaProdutoDTOList(produtoDTO.getCaracteristicaProdutoDTOList());
 					requisicaoProdutoToCreateList.add(requisicaoProduto);
 				}
 			}
@@ -80,18 +91,17 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 			Requisicao requisicao = new Requisicao();
 			requisicao.setDataHora(LocalDateTime.now());
 			requisicao.setUsuario(usuario);
-			requisicao.setStatus(IndicadorRequisicaoStatus.NI);
 			requisicao.setReservado(false);
-			requisicao = requisicaoRepository.save(requisicao);
+			requisicao = getRepository().save(requisicao);
 
 			for (RequisicaoProduto requisicaoProduto : requisicaoProdutoToCreateList)
 				requisicaoProduto.setRequisicao(requisicao);
 
-			requisicaoProdutoRepository.save(requisicaoProdutoToCreateList);
+			requisicaoProdutoBusiness.save(requisicaoProdutoToCreateList);
 		}
 
 		if (!CollectionUtils.isEmpty(requisicaoProdutoToUpdateList)) {
-			requisicaoProdutoRepository.save(requisicaoProdutoToUpdateList);
+			requisicaoProdutoBusiness.save(requisicaoProdutoToUpdateList);
 		}
 	}
 
@@ -102,9 +112,8 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 		Requisicao requisicao = new Requisicao();
 		requisicao.setDataHora(LocalDateTime.now());
 		requisicao.setUsuario(usuario);
-		requisicao.setStatus(IndicadorRequisicaoStatus.NI);
 		requisicao.setReservado(true);
-		requisicao = requisicaoRepository.save(requisicao);
+		requisicao = getRepository().save(requisicao);
 
 		int grupoProdutoSequencia = 0;
 		List<RequisicaoProduto> requisicaoProdutoToAdd = new ArrayList<>();
@@ -145,14 +154,14 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 				}
 			}
 		}
-		requisicaoProdutoRepository.save(requisicaoProdutoToAdd);
+		requisicaoProdutoBusiness.save(requisicaoProdutoToAdd);
 	}
 
 	@Override
 	public List<GrupoProdutoProdutoDTO> fillPrepareResumeList(Usuario usuario) {
 		List<Produto> produtoList = produtoManager.getProdutoList(null);
 		List<GrupoProdutoProdutoDTO> result = new ArrayList<>();
-		List<RequisicaoProduto> requisicaoProdutoList = requisicaoProdutoRepository
+		List<RequisicaoProduto> requisicaoProdutoList = requisicaoProdutoBusiness
 				.findNotConcludedByUsuario(usuario.getId());
 		for (Long produtoId : requisicaoProdutoList.stream().map(rp -> rp.getProduto().getId()).distinct()
 				.collect(Collectors.toList())) {
@@ -160,21 +169,25 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 			GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
 					produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO);
 
-			int credito = 0;
+			GrupoCaracteristicaProduto grupoUrgencia = produtoManager
+					.getGrupoCaracteristicaProduto(GrupoCaracteristicaProduto.ID_URGENCIA);
+			produto.getGrupoCaracteristicaProdutoList().add(0, grupoUrgencia);
+			dto.setGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList());
+
+			int emPreparacao = 0, aConsumir = 0, aPagar = 0;
 			List<RequisicaoProduto> requisicaoByProdutoList = requisicaoProdutoList.stream()
 					.filter(rp -> rp.getProduto().equals(produto)).collect(Collectors.toList());
 			for (RequisicaoProduto requisicaoProduto : requisicaoByProdutoList) {
-				if (requisicaoProduto.getStatusPreparo().equals(IndicadorRequisicaoProdutoStatusPreparo.CO)
-						&& !requisicaoProduto.getStatusPagamento().equals(IndicadorRequisicaoProdutoStatusPagamento.PG))
-					credito += -1;
-				else if (!requisicaoProduto.getStatusPreparo().equals(IndicadorRequisicaoProdutoStatusPreparo.CO)
-						&& requisicaoProduto.getStatusPagamento().equals(IndicadorRequisicaoProdutoStatusPagamento.PG))
-					credito += 1;
-				else if (!requisicaoProduto.getStatusPreparo().equals(IndicadorRequisicaoProdutoStatusPreparo.CO)
-						&& !requisicaoProduto.getStatusPagamento().equals(IndicadorRequisicaoProdutoStatusPagamento.PG))
-					credito += -1;
+				if (requisicaoProduto.getStatusPreparo().equals(IndicadorRequisicaoProdutoStatusPreparo.EP))
+					emPreparacao++;
+				if (requisicaoProduto.getStatusPreparo().equals(IndicadorRequisicaoProdutoStatusPreparo.NI))
+					aConsumir++;
+				if (!requisicaoProduto.getStatusPagamento().equals(IndicadorRequisicaoProdutoStatusPagamento.PG))
+					aPagar++;
 			}
-			dto.setCredito(credito);
+			dto.setEmPreparacao(emPreparacao);
+			dto.setAConsumir(aConsumir);
+			dto.setAPagar(aPagar);
 
 			result.add(dto);
 		}
@@ -182,9 +195,157 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 	}
 
 	@Override
-	public List<Requisicao> findByUsuarioOrderDataHoraDesc(Usuario usuario) {
-		List<RequisicaoProduto> requisicaoProdutoList = requisicaoProdutoRepository
+	public List<RequisicaoDTO> fillLastRequestResumeList(Usuario usuario) {
+		List<RequisicaoProduto> requisicaoProdutoList = requisicaoProdutoBusiness
 				.findReservadoByUsuarioOrderDataHoraDesc(usuario.getId());
-		return requisicaoProdutoList.stream().map(rp -> rp.getRequisicao()).distinct().collect(Collectors.toList());
+		List<Requisicao> resquisicaoList = requisicaoProdutoList.stream().map(rp -> rp.getRequisicao()).distinct()
+				.collect(Collectors.toList());
+		for (Requisicao requisicao : resquisicaoList) {
+			requisicao.setRequisicaoProdutoList(new ArrayList<>());
+			for (RequisicaoProduto requisicaoProduto : requisicaoProdutoList) {
+				if (requisicaoProduto.getRequisicao().equals(requisicao))
+					requisicao.getRequisicaoProdutoList().add(requisicaoProduto);
+			}
+		}
+
+		List<RequisicaoDTO> result = new ArrayList<>();
+		for (Requisicao requisicao : resquisicaoList) {
+			List<Integer> sequenciaUsed = new ArrayList<>();
+
+			RequisicaoDTO requisicaoDTO = new RequisicaoDTO(requisicao.getId(), requisicao.getDataHora(),
+					requisicao.getUsuario());
+			requisicaoDTO.setGrupoProdutoProdutoDTOList(new ArrayList<>());
+
+			for (RequisicaoProduto requisicaoProduto : requisicao.getRequisicaoProdutoList()) {
+				if (requisicaoProduto.getGrupoProduto() == null) {
+					Produto produto = produtoManager.getProduto(requisicaoProduto.getProduto().getId());
+					requisicaoDTO.getGrupoProdutoProdutoDTOList()
+							.add(new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(), produto.getDescricao(),
+									produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO));
+				} else {
+					if (sequenciaUsed.contains(requisicaoProduto.getGrupoProdutoSequencia()))
+						continue;
+
+					GrupoProduto grupoProduto = produtoManager
+							.getGrupoProduto(requisicaoProduto.getGrupoProduto().getId());
+					requisicaoDTO.getGrupoProdutoProdutoDTOList()
+							.add(new GrupoProdutoProdutoDTO(grupoProduto.getId(), grupoProduto.getNome(),
+									grupoProduto.getDescricao(), grupoProduto.getPreco(),
+									GrupoProdutoProdutoDTO.Tipo.GRUPO));
+					sequenciaUsed.add(requisicaoProduto.getGrupoProdutoSequencia());
+				}
+			}
+			result.add(requisicaoDTO);
+		}
+		return result;
+	}
+
+	@Override
+	public List<GrupoProdutoProdutoDTO> fillPreparingList(Long usuarioNegocioId) {
+		List<Produto> produtoList = produtoManager.getProdutoList(null);
+		List<GrupoProdutoProdutoDTO> result = new ArrayList<>();
+		List<RequisicaoProduto> requisicaoProdutoList = requisicaoProdutoBusiness.findByStatusPreparacaoUsuarioNegocio(
+				Arrays.asList(IndicadorRequisicaoProdutoStatusPreparo.EP), usuarioNegocioId);
+		requisicaoProdutoList = requisicaoProdutoBusiness.fetchCaracteristicaProduto(requisicaoProdutoList);
+		for (RequisicaoProduto requisicaoProduto : requisicaoProdutoList) {
+			Produto produto = produtoList.stream().filter(p -> p.getId().equals(requisicaoProduto.getProduto().getId()))
+					.findFirst().get();
+			GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
+					produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO,
+					requisicaoProduto.getDataHoraRequisicaoPreparacao(), requisicaoProduto.getStatusPreparo(),
+					requisicaoProduto.getStatusPagamento());
+			dto.setUsuarioRequisicao(requisicaoProduto.getRequisicao().getUsuario().getNome());
+			dto.setRequisicaoProdutoId(requisicaoProduto.getId());
+			dto.setCaracteristicaProdutoList(requisicaoProduto.getCaracteristicaProdutoList(),
+					produtoManager.getCaracteristicaProduto(CaracteristicaProduto.ID_NORMAL));
+			result.add(dto);
+		}
+		return result.stream().sorted((a, b) -> b.getDatahora().compareTo(a.getDatahora()))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<GrupoProdutoProdutoDTO> fillForPaymentList(Long usuarioNegocioId) {
+		List<RequisicaoProduto> requisicaoProdutoList = requisicaoProdutoBusiness.findByStatusPagamentoUsuarioNegocio(
+				Arrays.asList(IndicadorRequisicaoProdutoStatusPagamento.NP), usuarioNegocioId);
+
+		List<Integer> sequenciaUsed = new ArrayList<>();
+		List<GrupoProdutoProdutoDTO> result = new ArrayList<>();
+		for (RequisicaoProduto requisicaoProduto : requisicaoProdutoList) {
+			if (requisicaoProduto.getGrupoProduto() == null) {
+				Produto produto = produtoManager.getProduto(requisicaoProduto.getProduto().getId());
+				GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
+						produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO,
+						requisicaoProduto.getRequisicao().getDataHora());
+				dto.setUsuarioRequisicao(requisicaoProduto.getRequisicao().getUsuario().getNome());
+				dto.setRequisicaoProdutoId(requisicaoProduto.getId());
+				result.add(dto);
+			} else {
+				if (sequenciaUsed.contains(requisicaoProduto.getGrupoProdutoSequencia()))
+					continue;
+
+				GrupoProduto grupoProduto = produtoManager.getGrupoProduto(requisicaoProduto.getGrupoProduto().getId());
+				GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(grupoProduto.getId(), grupoProduto.getNome(),
+						grupoProduto.getDescricao(), grupoProduto.getPreco(), GrupoProdutoProdutoDTO.Tipo.GRUPO,
+						requisicaoProduto.getRequisicao().getDataHora());
+				dto.setUsuarioRequisicao(requisicaoProduto.getRequisicao().getUsuario().getNome());
+				dto.setRequisicaoProdutoId(requisicaoProduto.getId());
+				result.add(dto);
+				sequenciaUsed.add(requisicaoProduto.getGrupoProdutoSequencia());
+			}
+		}
+		return result.stream().sorted((a, b) -> b.getDatahora().compareTo(a.getDatahora()))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public Requisicao concludePreparing(Long requisicaoProdutoId) {
+		RequisicaoProduto requisicaoProduto = requisicaoProdutoBusiness.findById(requisicaoProdutoId);
+		requisicaoProduto.setStatusPreparo(IndicadorRequisicaoProdutoStatusPreparo.CO);
+		requisicaoProdutoBusiness.save(requisicaoProduto);
+
+		return requisicaoProduto.getRequisicao();
+	}
+
+	@Override
+	public Requisicao cancelPreparing(Long requisicaoProdutoId) {
+		RequisicaoProduto requisicaoProduto = requisicaoProdutoBusiness.findById(requisicaoProdutoId);
+		requisicaoProduto.setStatusPreparo(IndicadorRequisicaoProdutoStatusPreparo.NI);
+		requisicaoProdutoBusiness.save(requisicaoProduto);
+
+		return requisicaoProduto.getRequisicao();
+	}
+
+	@Override
+	public Requisicao cancelRequest(Long requisicaoProdutoId) {
+		RequisicaoProduto requisicaoProduto = requisicaoProdutoBusiness.findById(requisicaoProdutoId);
+		requisicaoProduto.setAtivo(false);
+		requisicaoProdutoBusiness.save(requisicaoProduto);
+
+		return requisicaoProduto.getRequisicao();
+	}
+
+	@Override
+	public Requisicao concludePayment(Long requisicaoProdutoId) {
+		List<RequisicaoProduto> requisicaoProdutoList = new ArrayList<>();
+
+		RequisicaoProduto requisicaoProdutoCore = requisicaoProdutoBusiness.findById(requisicaoProdutoId);
+		if (requisicaoProdutoCore.getGrupoProduto() == null)
+			requisicaoProdutoList.add(requisicaoProdutoCore);
+		else {
+			for (RequisicaoProduto requisicaoProduto : requisicaoProdutoBusiness
+					.findByRequisicaoGrupoProdutoAndSequencia(requisicaoProdutoCore.getRequisicao().getId(),
+							requisicaoProdutoCore.getGrupoProduto().getId(),
+							requisicaoProdutoCore.getGrupoProdutoSequencia())) {
+				requisicaoProdutoList.add(requisicaoProduto);
+			}
+		}
+
+		for (RequisicaoProduto requisicaoProduto : requisicaoProdutoList) {
+			requisicaoProduto.setStatusPagamento(IndicadorRequisicaoProdutoStatusPagamento.PG);
+		}
+		requisicaoProdutoBusiness.save(requisicaoProdutoList);
+
+		return requisicaoProdutoList.get(0).getRequisicao();
 	}
 }

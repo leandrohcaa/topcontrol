@@ -36,7 +36,7 @@ public class UsuarioService extends AbstractEntityService<Usuario, Long> {
 		Usuario result = null;
 		usuario = usuarioBusiness.login(usuario);
 		result = new Usuario(usuario.getId(), usuario.getUsuario(), usuario.getSenha(), usuario.getNome(),
-				usuario.getEmail(), usuario.getTelefone(), new ArrayList<>(), null);
+				usuario.getEmail(), usuario.getTelefone(), new ArrayList<>(), usuario.getDono());
 		return result;
 	}
 
@@ -47,7 +47,7 @@ public class UsuarioService extends AbstractEntityService<Usuario, Long> {
 		Usuario result = null;
 		usuario = usuarioBusiness.loginOwner(usuario);
 		result = new Usuario(usuario.getId(), usuario.getUsuario(), usuario.getSenha(), usuario.getNome(),
-				usuario.getEmail(), usuario.getTelefone(), new ArrayList<>(), null);
+				usuario.getEmail(), usuario.getTelefone(), new ArrayList<>(), usuario.getDono());
 		for (UsuarioNegocio un : usuario.getUsuarioNegocioList()) {
 			UsuarioNegocio resultUsuarioNegocio = new UsuarioNegocio(un.getId(), new Usuario(result.getId()),
 					new Negocio(un.getNegocio().getId(), un.getNegocio().getNome(), un.getNegocio().getTheme()),

@@ -31,64 +31,63 @@ export class LoginComponent implements OnInit {
 
         // get return url from route parameters or default to '/'
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-		  
-		
-    		this.usuarioInputFormControl = new FormControl();
-    		this.filteredUsuarioList = this.usuarioInputFormControl.valueChanges
-    			.startWith(null)
-    			.map(user => this.filterUser(user));
+
+        this.usuarioInputFormControl = new FormControl();
+        this.filteredUsuarioList = this.usuarioInputFormControl.valueChanges
+            .startWith(null)
+            .map(user => this.filterUser(user));
     }
-	
-	
+
+
     filterUser(userTyped: any) {
-      if(userTyped != null){
-        var usuarioFilterName = typeof(userTyped) == 'string' ? userTyped : userTyped.usuario;
-        return this.getUsuarioList().filter(user =>
-          user.usuario.toLowerCase().indexOf(usuarioFilterName.toLowerCase()) >= 0);
-      }
-      return this.getUsuarioList();
-    }  
+        if (userTyped != null) {
+            var usuarioFilterName = typeof (userTyped) == 'string' ? userTyped : userTyped.usuario;
+            return this.getUsuarioList().filter(user =>
+                user.usuario.toLowerCase().indexOf(usuarioFilterName.toLowerCase()) >= 0);
+        }
+        return this.getUsuarioList();
+    }
     usuarioOnSelect(evt: any) {
-  	  var usuarioSelected = evt.option.value;
-  	  this.model.usuario = usuarioSelected.usuario;
-      if(!this.isToShowPassword())
-          this.login();
+        var usuarioSelected = evt.option.value;
+        this.model.usuario = usuarioSelected.usuario;
+        if (!this.isToShowPassword())
+            this.login();
     }
-	
-  	login(): void{  
-          if(!this.isToShowPassword()){
-              this.model.senha = null;
-          }
-          this.authenticationRepository.login(this.model)
-              .subscribe(
-                  data => {
-                      this.router.navigate([this.returnUrl]);
-                  },
-                  error => {
-                      this.alertService.catchError(error);
-                  });
-  	}
-    
+
+    login(): void {
+        if (!this.isToShowPassword()) {
+            this.model.senha = null;
+        }
+        this.authenticationRepository.login(this.model)
+            .subscribe(
+            data => {
+                this.router.navigate([this.returnUrl]);
+            },
+            error => {
+                this.alertService.catchError(error);
+            });
+    }
+
     isToShowPassword(): boolean {
-          var owner = this.authenticationRepository.getOwner();
-          if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0 
-                && !owner.usuarioNegocioList[0].utilizaSenha){
-              return false;
-          }
-          return true;
+        var owner = this.authenticationRepository.getOwner();
+        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0
+            && !owner.usuarioNegocioList[0].utilizaSenha) {
+            return false;
+        }
+        return true;
     }
-	
-  	getUsuarioList(): Array<Usuario> {
-          var owner = this.authenticationRepository.getOwner();
-          if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0){
-              return owner.usuarioNegocioList[0].clienteList;
-          }
-          return [];
-  	}
-    
+
+    getUsuarioList(): Array<Usuario> {
+        var owner = this.authenticationRepository.getOwner();
+        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0) {
+            return owner.usuarioNegocioList[0].clienteList;
+        }
+        return [];
+    }
+
     usuarioWithDisplay(usuario: any): string {
-        if(usuario != null)
-          return typeof(usuario)=='string' ? usuario : usuario.usuario;
+        if (usuario != null)
+            return typeof (usuario) == 'string' ? usuario : usuario.usuario;
         return null;
     }
 }

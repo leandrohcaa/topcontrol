@@ -24,9 +24,17 @@ public class ProdutoService {
 	@RequestMapping(value = PREFIX_WEB_SERVICE + "/productlist", method = RequestMethod.GET)
 	public List<GrupoProdutoProdutoDTO> productlist(@RequestParam("usuarioNegocioId") Long usuarioNegocioId) {
 		List<GrupoProdutoProdutoDTO> result = new ArrayList<>();
-		for (Produto produto : produtoManager.getProdutoList(usuarioNegocioId))
-			result.add(new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(), produto.getDescricao(),
-					produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO, produto.getCaracteristicaProdutoList()));
+		for (Produto produto : produtoManager.getProdutoList(usuarioNegocioId)) {
+			GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
+					produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO);
+
+			GrupoCaracteristicaProduto grupoUrgencia = produtoManager
+					.getGrupoCaracteristicaProduto(GrupoCaracteristicaProduto.ID_URGENCIA);
+			produto.getGrupoCaracteristicaProdutoList().add(0, grupoUrgencia);
+			dto.setGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList());
+
+			result.add(dto);
+		}
 		return result;
 	}
 
@@ -46,9 +54,12 @@ public class ProdutoService {
 	@RequestMapping(value = PREFIX_WEB_SERVICE + "/productandgrouplist", method = RequestMethod.GET)
 	public List<GrupoProdutoProdutoDTO> productandgrouplist(@RequestParam("usuarioNegocioId") Long usuarioNegocioId) {
 		List<GrupoProdutoProdutoDTO> result = new ArrayList<>();
-		for (Produto produto : produtoManager.getProdutoList(usuarioNegocioId))
-			result.add(new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(), produto.getDescricao(),
-					produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO, produto.getCaracteristicaProdutoList()));
+		for (Produto produto : produtoManager.getProdutoList(usuarioNegocioId)) {
+			GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
+					produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO);
+			dto.setGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList());
+			result.add(dto);
+		}
 		for (GrupoProduto grupoProduto : produtoManager.getGrupoProdutoList(usuarioNegocioId))
 			result.add(new GrupoProdutoProdutoDTO(grupoProduto.getId(), grupoProduto.getNome(),
 					grupoProduto.getDescricao(), grupoProduto.getPreco(), GrupoProdutoProdutoDTO.Tipo.GRUPO));

@@ -22,3 +22,13 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+install/
+frontend/src/main/frontend/node_modules
+frontend/src/main/frontend/node
+backend/target/
+app/target/
+app/src/main/app/node_modules
+app/src/main/app/platforms
+app/src/main/app/plugins
+app/src/main/app/www

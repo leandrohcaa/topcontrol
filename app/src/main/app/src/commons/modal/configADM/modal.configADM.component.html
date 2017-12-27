@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <span>Configurações ADM</span>
+    </ion-title>
+    <ion-buttons start>
+     <button ion-button icon-left (click)="dismiss()">
+	  <ion-icon name="arrow-back"></ion-icon>
+	</button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+	<form (ngSubmit)="changeHost()" #registerForm="ngForm">
+      <ion-row>
+        <ion-col>
+          <ion-list inset>
+            <ion-item>
+              <ion-input placeholder="Host" name="host" [(ngModel)]="host" required></ion-input>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      
+      <ion-row>
+        <ion-col class="signup-col">
+          <button ion-button class="submit-btn" full type="submit" [disabled]="!registerForm.form.valid">Alterar</button>
+        </ion-col>
+      </ion-row>
+     </form>
+</ion-content>

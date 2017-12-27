@@ -21,7 +21,9 @@
 									{{p.nome}}
 								</mat-card-title>
 								<mat-card-footer>
-									Crédito: {{p.credito}}
+									<p>A pagar: {{p.apagar}}</p>
+									<p>A consumir: {{p.aconsumir}}</p>
+									<p>Em preparação: {{p.emPreparacao}}</p>
 								</mat-card-footer>
 							</mat-card>
 						</div>			
@@ -31,12 +33,10 @@
 			<div fxFlex="50" style="text-align: center;border-left: 0px solid rgba(0,0,0,.12); margin-left: -1px;" fxFlexFill>
 				<h3 style="margin-bottom: 0px;">Últimas Reservas</h3>
 				<div fxLayoutAlign="start start" fxLayoutWrap>
-					<mat-card style="margin:20px; padding:10px; cursor: pointer;" (click)="preferencesRequestOnClick($event)" *ngFor="let r of preferencesRequestList">
-						<mat-card-header><mat-card-subtitle>{{r.datahora}}</mat-card-subtitle></mat-card-header>
+					<mat-card style="margin:20px; padding:10px; cursor: pointer;" (click)="requisicaoAcessoRapidoTabClick($event, r)" *ngFor="let r of preferencesRequestList">
+						<mat-card-header><mat-card-subtitle>{{formatLocalDateTime(r.datahora)}}</mat-card-subtitle></mat-card-header>
     					<mat-card-content>
-							<mat-list>
-								<mat-list-item style="height: 0%;" *ngFor="let rp of r.requisicaoProdutoList">{{rp.produto.nome}}</mat-list-item>
-							</mat-list>
+							{{r.grupoProdutoProdutoDTOResume}}
 						</mat-card-content>
 					</mat-card>
 				</div>

@@ -11,22 +11,28 @@ import { GrupoProdutoProdutoDTO } from '../models/index';
 @Injectable()
 export class ProductRepository {
     constructor(private http: Http,
-      private webServiceService: WebServiceService,
-      private authenticationRepository: AuthenticationRepository) { }
-  
+        private webServiceService: WebServiceService,
+        private authenticationRepository: AuthenticationRepository) { }
+
     getProductAndGroup() {
-      var owner = this.authenticationRepository.getOwner();
-      var usuarioNegocioId = null;
-      if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
-        usuarioNegocioId = owner.usuarioNegocioList[0].id;
-          return this.http.get(this.webServiceService.getURL() + 'product/productandgrouplist?usuarioNegocioId=' + usuarioNegocioId);
+        var owner = this.authenticationRepository.getOwner();
+        var usuarioNegocioId = null;
+        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
+            usuarioNegocioId = owner.usuarioNegocioList[0].id;
+        return this.http.get(this.webServiceService.getURL() + 'product/productandgrouplist?usuarioNegocioId=' + usuarioNegocioId)
+            .map((response: Response) => {
+                return this.webServiceService.catchResponseGET(response);
+            });
     }
-  
+
     getProduct() {
-      var owner = this.authenticationRepository.getOwner();
-      var usuarioNegocioId = null;
-      if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
-        usuarioNegocioId = owner.usuarioNegocioList[0].id;
-          return this.http.get(this.webServiceService.getURL() + 'product/productlist?usuarioNegocioId=' + usuarioNegocioId);
+        var owner = this.authenticationRepository.getOwner();
+        var usuarioNegocioId = null;
+        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
+            usuarioNegocioId = owner.usuarioNegocioList[0].id;
+        return this.http.get(this.webServiceService.getURL() + 'product/productlist?usuarioNegocioId=' + usuarioNegocioId)
+            .map((response: Response) => {
+                return this.webServiceService.catchResponseGET(response);
+            });
     }
 }

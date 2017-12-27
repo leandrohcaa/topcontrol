@@ -1,15 +1,20 @@
 package com.topcontrol.domain;
 
 import com.topcontrol.domain.base.*;
+import com.topcontrol.domain.dto.CaracteristicaProdutoDTO;
 import com.topcontrol.domain.indicador.IndicadorRequisicaoProdutoStatusPagamento;
 import com.topcontrol.domain.indicador.IndicadorRequisicaoProdutoStatusPreparo;
 import com.topcontrol.domain.indicador.IndicadorRequisicaoProdutoUrgencia;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
+
+import org.springframework.util.CollectionUtils;
 
 import lombok.*;
 
@@ -37,13 +42,13 @@ public class RequisicaoProduto extends BaseEntity<Long> {
 	@ManyToOne
 	@JoinColumn(name = "grupo_produto", nullable = true)
 	private GrupoProduto grupoProduto;
-	
+
 	@Getter
 	@Setter
 	@Digits(integer = 2, fraction = 0)
 	@Column(name = "grupo_produto_sequencia", nullable = true, precision = 2, scale = 0)
 	private Integer grupoProdutoSequencia;
-	
+
 	@Getter
 	@Setter
 	@Digits(integer = 10, fraction = 3)
@@ -76,6 +81,11 @@ public class RequisicaoProduto extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
+	@Column(name = "datahora_requisicao_preparacao", nullable = true)
+	private LocalDateTime dataHoraRequisicaoPreparacao;
+
+	@Getter
+	@Setter
 	@Column(name = "datahora_preparo", nullable = true)
 	private LocalDateTime dataHoraPreparo;
 
@@ -90,11 +100,39 @@ public class RequisicaoProduto extends BaseEntity<Long> {
 	@Enumerated(EnumType.STRING)
 	private IndicadorRequisicaoProdutoUrgencia urgencia;
 
+	@Getter
+	@Setter
+	@Column(name = "datahora_ultima_modificacao", nullable = false)
+	private LocalDateTime dataHoraUltimaModificacao;
+
+	@Getter
+	@Setter
+	@Column(name = "ativo", nullable = false)
+	private Boolean ativo;
+
+	@Getter
+	@Setter
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "requisicao_produto_caracteristica_produto", joinColumns = {
+			@JoinColumn(name = "requisicao_produto") }, inverseJoinColumns = {
+					@JoinColumn(name = "caracteristica_produto") })
+	private List<CaracteristicaProduto> caracteristicaProdutoList;
+
 	public RequisicaoProduto() {
 	}
 
 	public RequisicaoProduto(Long id) {
 		this.id = id;
+	}
+
+	public void setCaracteristicaProdutoDTOList(List<CaracteristicaProdutoDTO> dtoList) {
+		setCaracteristicaProdutoList(new ArrayList<>());
+		if (!CollectionUtils.isEmpty(dtoList)) {
+			for (CaracteristicaProdutoDTO caracteristicaProdutoDTO : dtoList) {
+				getCaracteristicaProdutoList().add(new CaracteristicaProduto(caracteristicaProdutoDTO.getId(),
+						caracteristicaProdutoDTO.getNome(), caracteristicaProdutoDTO.getDescricao()));
+			}
+		}
 	}
 
 	public RequisicaoProduto(Long id, Requisicao requisicao, Produto produto, GrupoProduto grupoProduto,

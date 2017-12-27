@@ -69,6 +69,10 @@ public class UsuarioNegocio extends BaseEntity<Long> {
 	public UsuarioNegocio() {
 	}
 
+	public UsuarioNegocio(Long id) {
+		this.id = id;
+	}
+
 	public UsuarioNegocio(Usuario usuario, Negocio negocio) {
 		this.usuario = usuario;
 		this.negocio = negocio;

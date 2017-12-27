@@ -16,6 +16,7 @@
 		</div>
 		<div *ngIf="getCurrentUser()" fxFlexFill fxLayout="row" fxLayoutAlign="start center">
 			<div class="menuItem" fxFlex="15" fxFlexFill fxLayout="row" fxLayoutAlign="center center" style="cursor: pointer; border-right: 1px solid white;" [ngStyle]="getHeaderStyle('')" (click)="navigate('')"><span style='font-family: Roboto,"Helvetica Neue",sans-serif;font-size: 18px;'>Pedidos</span></div>
+			<div class="menuItem" fxFlex="15" fxFlexFill fxLayout="row" fxLayoutAlign="center center" style="cursor: pointer; border-right: 1px solid white;" [ngStyle]="getHeaderStyle('dataConfig')" (click)="navigate('dataConfig')"><span style='font-family: Roboto,"Helvetica Neue",sans-serif;font-size: 18px;'>Dados Mestre</span></div>
 			<div class="menuItem" fxFlex="15" fxFlexFill fxLayout="row" fxLayoutAlign="center center" style="cursor: pointer; border-right: 1px solid white;" [ngStyle]="getHeaderStyle('contact')" (click)="navigate('contact')"><span style='font-family: Roboto,"Helvetica Neue",sans-serif;font-size: 18px;'>Contato</span></div>
 			<span fxFlex></span>
 			<h5 style='font: 500 16px/29px Roboto,"Helvetica Neue",sans-serif;padding-right: 5px;'>Olá, {{getCurrentUser()}}</h5>

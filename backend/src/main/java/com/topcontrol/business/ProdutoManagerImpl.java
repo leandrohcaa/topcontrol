@@ -28,12 +28,20 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 	private transient ProdutoRepository produtoRepository;
 	@Autowired
 	private transient GrupoProdutoRepository grupoProdutoRepository;
+	@Autowired
+	private transient CaracteristicaProdutoRepository caracteristicaProdutoRepository;
+	@Autowired
+	private transient GrupoCaracteristicaProdutoRepository grupoCaracteristicaProdutoRepository;
 
 	private List<Produto> produtoList;
 	private List<GrupoProduto> grupoProdutoList;
+	private List<GrupoCaracteristicaProduto> grupoCaracteristicaProdutoList;
+	private List<CaracteristicaProduto> caracteristicaProdutoList;
 
 	@PostConstruct
 	public void init() {
+		caracteristicaProdutoList = getCaracteristicaProdutoList();
+		grupoCaracteristicaProdutoList = getGrupoCaracteristicaProdutoList();
 		produtoList = getProdutoList(null);
 		grupoProdutoList = getGrupoProdutoList(null);
 	}
@@ -50,17 +58,49 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 	}
 
 	@Override
+	public Produto getProduto(Long id) {
+		return getProdutoList(null).stream().filter(p -> p.getId().equals(id)).findFirst().get();
+	}
+
+	@Override
+	public GrupoProduto getGrupoProduto(Long id) {
+		return getGrupoProdutoList(null).stream().filter(p -> p.getId().equals(id)).findFirst().get();
+	}
+
+	@Override
+	public GrupoCaracteristicaProduto getGrupoCaracteristicaProduto(Long id) {
+		return getGrupoCaracteristicaProdutoList().stream().filter(p -> p.getId().equals(id)).findFirst().get();
+	}
+
+	@Override
+	public CaracteristicaProduto getCaracteristicaProduto(Long id) {
+		return getCaracteristicaProdutoList().stream().filter(p -> p.getId().equals(id)).findFirst().get();
+	}
+
+	@Override
 	public List<Produto> getProdutoList(Long usuarioNegocioId) {
 		if (produtoList == null) {
 			synchronized (ProdutoManagerImpl.class) {
 				if (produtoList == null) {
 					produtoList = produtoRepository.findForCache();
 
-					List<CaracteristicaProduto> caracteristcaList = produtoRepository
-							.findCaracteristicaProdutoForCache();
+					List<Produto> produtoWithGrupoCaracteristicaList = produtoRepository
+							.findGrupoCaracteristicaProdutoForCache();
 					for (Produto produto : produtoList) {
-						produto.setCaracteristicaProdutoList(caracteristcaList.stream()
-								.filter(c -> c.getProduto().equals(produto)).distinct().collect(Collectors.toList()));
+						produto.setGrupoCaracteristicaProdutoList(new ArrayList<>());
+						for (Produto produtoWithGrupoCaracteristica : produtoWithGrupoCaracteristicaList) {
+							if (produto.equals(produtoWithGrupoCaracteristica)) {
+								for (GrupoCaracteristicaProduto grupoCaracteristicaProduto : produtoWithGrupoCaracteristica
+										.getGrupoCaracteristicaProdutoList()) {
+									GrupoCaracteristicaProduto grupoCaracteristicaProdutoForFetch = getGrupoCaracteristicaProduto(
+											grupoCaracteristicaProduto.getId());
+									if (!produto.getGrupoCaracteristicaProdutoList()
+											.contains(grupoCaracteristicaProdutoForFetch))
+										produto.getGrupoCaracteristicaProdutoList()
+												.add(grupoCaracteristicaProdutoForFetch);
+								}
+							}
+						}
 					}
 				}
 			}
@@ -87,6 +127,39 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 			}
 		}
 		return filterGrupoProdutoByUsuarioNegocio(new ArrayList<>(grupoProdutoList), usuarioNegocioId);
+	}
+
+	@Override
+	public List<GrupoCaracteristicaProduto> getGrupoCaracteristicaProdutoList() {
+		if (grupoCaracteristicaProdutoList == null) {
+			synchronized (ProdutoManagerImpl.class) {
+				if (grupoCaracteristicaProdutoList == null) {
+					grupoCaracteristicaProdutoList = grupoCaracteristicaProdutoRepository.findForCache();
+
+					List<CaracteristicaProduto> caracteristicaProdutoList = getCaracteristicaProdutoList();
+					for (GrupoCaracteristicaProduto grupoCaracteristicaProduto : grupoCaracteristicaProdutoList) {
+						grupoCaracteristicaProduto.setCaracteristicaProdutoList(caracteristicaProdutoList.stream()
+								.filter(p -> p.getGrupoCaracteristicaProdutoList().stream()
+										.filter(gp -> gp.getId().equals(grupoCaracteristicaProduto.getId()))
+										.count() > 0)
+								.distinct().collect(Collectors.toList()));
+					}
+				}
+			}
+		}
+		return grupoCaracteristicaProdutoList;
+	}
+
+	@Override
+	public List<CaracteristicaProduto> getCaracteristicaProdutoList() {
+		if (caracteristicaProdutoList == null) {
+			synchronized (ProdutoManagerImpl.class) {
+				if (caracteristicaProdutoList == null) {
+					caracteristicaProdutoList = caracteristicaProdutoRepository.findForCache();
+				}
+			}
+		}
+		return caracteristicaProdutoList;
 	}
 
 	private List<Produto> filterProdutoByUsuarioNegocio(List<Produto> produtoListResult, Long usuarioNegocioId) {

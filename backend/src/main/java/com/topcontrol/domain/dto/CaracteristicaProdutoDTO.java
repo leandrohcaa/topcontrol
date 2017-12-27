@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 
 import lombok.*;
 
-@Data
 @ToString(exclude = {})
+@EqualsAndHashCode(callSuper = false, of = { "id" })
 public class CaracteristicaProdutoDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
