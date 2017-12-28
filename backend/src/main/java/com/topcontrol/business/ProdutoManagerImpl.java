@@ -6,6 +6,14 @@ import com.topcontrol.infra.BusinessException;
 import com.topcontrol.repository.*;
 import com.topcontrol.repository.base.*;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import lombok.Getter;
 
 import com.topcontrol.business.base.*;
@@ -13,10 +21,12 @@ import com.topcontrol.business.base.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.*;
@@ -34,6 +44,9 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 	@Autowired
 	private transient GrupoCaracteristicaProdutoRepository grupoCaracteristicaProdutoRepository;
 
+	public static final String IMAGE_TYPE = ".jpeg";
+	public static final String PATH_IMAGE_PRODUCT = "./image/product/";
+	
 	private List<Produto> produtoList;
 	private List<GrupoProduto> grupoProdutoList;
 	private List<GrupoCaracteristicaProduto> grupoCaracteristicaProdutoList;
@@ -186,7 +199,29 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 
 	@Override
 	public void saveImage(GrupoProdutoProdutoDTO dto, String image) {
-		String a = image;
-		String b = a;
+		String base64Image = image.split(",")[1];
+		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+		BufferedImage img;
+		try {
+			img = ImageIO.read(new ByteArrayInputStream(imageBytes));
+			ImageIO.write(img, IMAGE_TYPE, new File(PATH_IMAGE_PRODUCT + dto.getId() + "." + IMAGE_TYPE));
+		} catch (IOException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
+	@Override
+	public GrupoProdutoProdutoDTO fillImage(GrupoProdutoProdutoDTO dto) {
+		Path path = Paths.get(PATH_IMAGE_PRODUCT + dto.getId() + IMAGE_TYPE);
+		if (Files.exists(path)) {
+			byte[] bytes;
+			try {
+				bytes = Files.readAllBytes(path);
+			} catch (IOException e) {
+				throw new RuntimeException(e.getMessage());
+			}
+			dto.setImageBase64(Base64.getEncoder().encodeToString(bytes));
+		}
+		return dto;
 	}
 }

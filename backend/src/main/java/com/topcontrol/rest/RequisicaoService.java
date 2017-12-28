@@ -46,6 +46,8 @@ public class RequisicaoService {
 	@Autowired
 	private transient RequisicaoBusiness requisicaoBusiness;
 	@Autowired
+	private transient ProdutoManager produtoManager;
+	@Autowired
 	private transient RequisicaoProdutoBusiness requisicaoProdutoBusiness;
 
 	@CrossOrigin
@@ -56,6 +58,7 @@ public class RequisicaoService {
 
 		RequestPrepareResponseDTO result = new RequestPrepareResponseDTO();
 		result.preparacaoList = requisicaoBusiness.fillPrepareResumeList(dtoObject.usuario);
+		result.preparacaoList.forEach(dto -> dto = produtoManager.fillImage(dto));	
 		result.lastModification = requisicaoProdutoBusiness.findMaxUltimaModificacaoByUsuarioRequisicao(dtoObject.usuario.getId());
 		return result;
 	}
@@ -68,6 +71,7 @@ public class RequisicaoService {
 
 		RequestPrepareResponseDTO result = new RequestPrepareResponseDTO();
 		result.preparacaoList = requisicaoBusiness.fillPrepareResumeList(dtoObject.usuario);
+		result.preparacaoList.forEach(dto -> dto = produtoManager.fillImage(dto));	
 		result.requisicaoList = requisicaoBusiness.fillLastRequestResumeList(dtoObject.usuario);
 		result.lastModification = requisicaoProdutoBusiness.findMaxUltimaModificacaoByUsuarioRequisicao(dtoObject.usuario.getId());
 		return result;
@@ -79,6 +83,7 @@ public class RequisicaoService {
 	public RequestPrepareResponseDTO getprepareandrequestresumelist(@RequestBody Usuario usuario) {
 		RequestPrepareResponseDTO result = new RequestPrepareResponseDTO();
 		result.preparacaoList = requisicaoBusiness.fillPrepareResumeList(usuario);
+		result.preparacaoList.forEach(dto -> dto = produtoManager.fillImage(dto));		
 		result.requisicaoList = requisicaoBusiness.fillLastRequestResumeList(usuario);
 		result.lastModification = requisicaoProdutoBusiness.findMaxUltimaModificacaoByUsuarioRequisicao(usuario.getId());
 		return result;
@@ -88,7 +93,9 @@ public class RequisicaoService {
 	@ResponseBody
 	@RequestMapping(value = PREFIX_WEB_SERVICE + "/getprepareresumelist", method = RequestMethod.GET)
 	public List<GrupoProdutoProdutoDTO> getprepareresumelist(@RequestParam("usuarioId") Long usuarioId) {
-		return requisicaoBusiness.fillPrepareResumeList(new Usuario(usuarioId));
+		List<GrupoProdutoProdutoDTO> result =  requisicaoBusiness.fillPrepareResumeList(new Usuario(usuarioId));
+		result.forEach(dto -> dto = produtoManager.fillImage(dto));
+		return result;
 	}
 	
 	@CrossOrigin

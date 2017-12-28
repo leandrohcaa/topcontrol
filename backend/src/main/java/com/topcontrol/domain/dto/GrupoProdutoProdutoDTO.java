@@ -95,6 +95,10 @@ public class GrupoProdutoProdutoDTO implements Serializable {
 	@Setter
 	private List<GrupoCaracteristicaProdutoDTO> grupoCaracteristicaProdutoDTOList;
 
+	@Getter
+	@Setter
+	private String imageBase64;
+
 	private String caracteristicaProdutoDTOResume;
 
 	public String getCaracteristicaProdutoDTOResume() {

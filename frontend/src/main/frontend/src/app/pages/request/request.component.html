@@ -20,7 +20,8 @@
 								<mat-card-title>
 									{{p.nome}}
 								</mat-card-title>
-								<mat-card-footer>
+								<img mat-card-image src="data:image/jpeg;base64,{{p.imageBase64}}" style="width: 80px;">
+  								<mat-card-footer>
 									<p>A pagar: {{p.apagar}}</p>
 									<p>A consumir: {{p.aconsumir}}</p>
 									<p>Em preparação: {{p.emPreparacao}}</p>

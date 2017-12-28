@@ -80,4 +80,5 @@ export class GrupoProdutoProdutoDTO {
     pendenteFillCaracteristicas: boolean;
     grupoCaracteristicaProdutoDTOList: Array<GrupoCaracteristicaProdutoDTO>;
     caracteristicaProdutoDTOList: Array<CaracteristicaProdutoDTO>;
+    imageBase64: string;
 }

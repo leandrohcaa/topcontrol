@@ -42,4 +42,6 @@ public interface ProdutoManager extends IBusiness<Produto, Long> {
 
 	void saveImage(GrupoProdutoProdutoDTO dto, String image);
 
+	GrupoProdutoProdutoDTO fillImage(GrupoProdutoProdutoDTO dto);
+
 }
