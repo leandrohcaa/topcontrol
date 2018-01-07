@@ -65,7 +65,7 @@ public class Requisicao extends BaseEntity<Long> {
 								requisicaoProduto.getPreco(), requisicaoProduto.getStatusPreparo(),
 								requisicaoProduto.getStatusPagamento(), requisicaoProduto.getUsuarioPreparo(),
 								requisicaoProduto.getUsuarioPagamento(), requisicaoProduto.getDataHoraPreparo(),
-								requisicaoProduto.getDataHoraPagamento(), requisicaoProduto.getUrgencia()));
+								requisicaoProduto.getDataHoraPagamento()));
 			}
 		}
 	}

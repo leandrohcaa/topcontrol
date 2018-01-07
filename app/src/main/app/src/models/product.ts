@@ -75,7 +75,6 @@ export class GrupoProdutoProdutoDTO {
     caracteristicaProdutoDTOResume: string;
     requisicaoProdutoId: number;
     estadoExibicao: string = 'visible';
-    imagem: string;
     usuarioRequisicao: string;
     pendenteFillCaracteristicas: boolean;
     statusPreparo: string;
@@ -83,4 +82,5 @@ export class GrupoProdutoProdutoDTO {
     urgencia: CaracteristicaProdutoDTO;
     grupoCaracteristicaProdutoDTOList: Array<GrupoCaracteristicaProdutoDTO>;
     caracteristicaProdutoDTOList: Array<CaracteristicaProdutoDTO>;
+    imageBase64: string;
 }

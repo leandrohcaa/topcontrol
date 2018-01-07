@@ -84,6 +84,11 @@ public class RequisicaoProdutoBusinessImpl extends AbstractBusiness<RequisicaoPr
 	}
 
 	@Override
+	public List<RequisicaoProduto> findConcludedByUsuarioNotProduto(Long usuarioId, List<Long> produtoIdList) {
+		return requisicaoProdutoRepository.findConcludedByUsuarioNotProduto(usuarioId, produtoIdList);
+	}
+
+	@Override
 	public List<RequisicaoProduto> findNotEmPreparacaoByUsuarioProduto(Long usuarioId, List<Long> produtoIdList) {
 		return requisicaoProdutoRepository.findNotEmPreparacaoByUsuarioProduto(usuarioId, produtoIdList);
 	}

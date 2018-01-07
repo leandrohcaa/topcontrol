@@ -27,6 +27,8 @@ install/
 frontend/src/main/frontend/node_modules
 frontend/src/main/frontend/node
 backend/target/
+backend/logs/
+backend/image/
 app/target/
 app/src/main/app/node_modules
 app/src/main/app/platforms

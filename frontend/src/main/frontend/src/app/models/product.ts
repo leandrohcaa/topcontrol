@@ -60,6 +60,7 @@ export class CaracteristicaProdutoDTO {
     id: number;
     nome: string;
     descricao: string;
+    selected: boolean = false;
 }
 export class GrupoProdutoProdutoDTO {
     id: number;
@@ -75,7 +76,6 @@ export class GrupoProdutoProdutoDTO {
     caracteristicaProdutoDTOResume: string;
     requisicaoProdutoId: number;
     estadoExibicao: string = 'visible';
-    imagem: string;
     usuarioRequisicao: string;
     pendenteFillCaracteristicas: boolean;
     grupoCaracteristicaProdutoDTOList: Array<GrupoCaracteristicaProdutoDTO>;

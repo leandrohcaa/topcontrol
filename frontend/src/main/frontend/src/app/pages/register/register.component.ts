@@ -20,40 +20,31 @@ export class RegisterComponent {
         private alertService: AlertService,
         private authenticationRepository: AuthenticationRepository) { }
 
-    register() {      
-        if(this.validate(this.model)){
-          
-          var owner = this.authenticationRepository.getOwner();
-          if(owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
-              this.model.dono = owner.usuarioNegocioList[0];
-          
-		      this.authenticationRepository.create(this.model)
-              .subscribe(
-                  data => {
-                      this.alertService.success('Registration successful', true);
-                      this.router.navigate(['/login']);
+    register() {
+        if (this.validate(this.model)) {
+            var owner = this.authenticationRepository.getOwner();
+            this.model.dono = owner.dono;
 
-                      var owner = this.authenticationRepository.getOwner();
-                      owner.senha = null;
-                      this.authenticationRepository.loginOwner(owner).subscribe(
-                          data => { },
-                          error => { this.alertService.catchError(error); });
-                  },
-                  error => {
-                      this.alertService.catchError(error);
-                  });
+            this.authenticationRepository.create(this.model)
+                .subscribe(
+                data => {
+                    this.router.navigate(['/login']);
+                },
+                error => {
+                    this.alertService.catchError(error);
+                });
         }
     }
-  
-    validate(model: Usuario): boolean{
-        if(model.senha != this.confirmacaoSenha){
-          this.alertService.error('Confirmação de senha incorreta.');
-          return false;
-        }else 
-        if(model.senha.length < 6){
-          this.alertService.error('A senha deve ter no mínimo 6 caracteres.');
-          return false;
-        }
+
+    validate(model: Usuario): boolean {
+        if (model.senha != this.confirmacaoSenha) {
+            this.alertService.error('Confirmação de senha incorreta.');
+            return false;
+        } else
+            if (model.senha.length < 6) {
+                this.alertService.error('A senha deve ter no mínimo 6 caracteres.');
+                return false;
+            }
         return true;
     }
 }

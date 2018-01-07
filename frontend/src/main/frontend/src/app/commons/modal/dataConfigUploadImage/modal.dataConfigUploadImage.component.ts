@@ -21,6 +21,8 @@ export class ModalDataConfigUploadImage {
     }
 
     confirm(): void {
+        if(this.image == null)
+            this.alertService.error('Imagem não selecionada.');
         this.dialogRef.close(this.image);
     }
 

@@ -3,7 +3,7 @@
 	<h4 style="margin: 0px;">Opções de Preparação de {{nomeProduto}}</h4>
 </div>
 <form name="form" (ngSubmit)="f.form.valid && confirm()" #f="ngForm" novalidate>
-	<div mat-dialog-content>
+	<div mat-dialog-content style="overflow:unset;">
 		<div *ngFor="let g of grupoCaracteristicaProdutoDTOList">
 			<h4>{{g.pergunta}}</h4>
 			<div *ngIf="g.tipo == 'SM'">
@@ -13,7 +13,7 @@
 			</div>
 			<div *ngIf="g.tipo == 'SU'">
 				<mat-radio-group (change)="radiobutton($event, g)">
-				  <mat-radio-button *ngFor="let c of g.caracteristicaProdutoDTOList" style="padding-right: 20px;" [value]="c">
+				  <mat-radio-button *ngFor="let c of g.caracteristicaProdutoDTOList" style="padding-right: 20px;" [value]="c" [checked]="c.selected">
 				    {{c.nome}}
 				  </mat-radio-button>
 				</mat-radio-group>

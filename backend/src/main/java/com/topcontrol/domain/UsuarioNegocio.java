@@ -11,13 +11,11 @@ import lombok.*;
 @Table(name = "usuario_negocio")
 public class UsuarioNegocio extends BaseEntity<Long> {
 
-	public UsuarioNegocio(Long id, Usuario usuario, Negocio negocio, Boolean utilizaSenha, List<Usuario> usuarioList,
-			List<Usuario> clienteList) {
+	public UsuarioNegocio(Long id, Usuario usuario, Negocio negocio, Boolean utilizaSenha, List<Usuario> clienteList) {
 		super(id);
 		this.usuario = usuario;
 		this.negocio = negocio;
 		this.utilizaSenha = utilizaSenha;
-		this.usuarioList = usuarioList;
 		this.clienteList = clienteList;
 	}
 
@@ -39,13 +37,6 @@ public class UsuarioNegocio extends BaseEntity<Long> {
 	@Setter
 	@Column(name = "utilizasenha", nullable = false)
 	private Boolean utilizaSenha;
-
-	@Getter
-	@Setter
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "usuario_negocio_usuario", joinColumns = {
-			@JoinColumn(name = "usuario_negocio") }, inverseJoinColumns = { @JoinColumn(name = "usuario") })
-	private List<Usuario> usuarioList;
 
 	@Getter
 	@Setter

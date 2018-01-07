@@ -17,7 +17,7 @@
 				    <input matInput type="password" placeholder="Senha" name="Senha" [(ngModel)]="model.senha" required>
 				  </mat-form-field>
 				  <div fxFlex>				  
-					<button style="float:left" color="primary" mat-raised-button [routerLink]="['/register']">Registrar</button>
+					<button *ngIf="isToShowRegistrar()" style="float:left" color="primary" mat-raised-button [routerLink]="['/register']">Registrar</button>
 					<button style="float:right" color="primary" mat-raised-button type="submit">Entrar</button>
 				  </div>
 				</div>

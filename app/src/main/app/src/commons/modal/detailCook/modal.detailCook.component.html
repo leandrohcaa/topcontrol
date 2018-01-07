@@ -14,10 +14,15 @@
 <ion-content padding>
 	<span>Características: {{data.caracteristicaProdutoDTOResume}}</span>
 	<br/>
+	<span>Urgência: {{data.urgencia.nome}}</span>
+	<br/>
 	<span>Cliente: {{data.usuarioRequisicao}}</span>
 	<br/>
 	<span>Data de pedido: {{formatLocalDateTime(data.datahora)}}</span>
 	<br/>
+	<div style="text-align:center;">
+		<img src="data:image/jpeg;base64,{{data.imageBase64}}" style="max-height: 100px;">
+	</div>
 	<br/>
      <button ion-button full round (click)="cancelPrepare()" color="red">
 	  	Cancelar Preparação

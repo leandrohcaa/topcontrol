@@ -17,8 +17,8 @@ public class CaracteristicaProduto extends BaseEntity<Long> {
 	}
 
 	private static final long serialVersionUID = 1L;
-	public static final Long ID_NORMAL = 7L;
-	public static final Long ID_URGENTE = 8L;
+	public static final Long ID_URGENCIA_NORMAL = 28L;
+	public static final Long ID_URGENCIA_URGENTE = 29L;
 
 	@Getter
 	@Setter

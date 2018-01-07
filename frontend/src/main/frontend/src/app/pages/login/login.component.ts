@@ -70,8 +70,7 @@ export class LoginComponent implements OnInit {
 
     isToShowPassword(): boolean {
         var owner = this.authenticationRepository.getOwner();
-        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0
-            && !owner.usuarioNegocioList[0].utilizaSenha) {
+        if (owner != null && owner.dono != null && !owner.dono.utilizaSenha) {
             return false;
         }
         return true;
@@ -79,10 +78,18 @@ export class LoginComponent implements OnInit {
 
     getUsuarioList(): Array<Usuario> {
         var owner = this.authenticationRepository.getOwner();
-        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0) {
-            return owner.usuarioNegocioList[0].clienteList;
+        if (owner != null && owner.dono.clienteList != null && owner.dono.clienteList.length > 0) {
+            return owner.dono.clienteList;
         }
         return [];
+    }
+    
+    isToShowRegistrar(): boolean {
+        var owner = this.authenticationRepository.getOwner();
+        if (owner != null && owner.dono != null) {
+            return true;
+        }
+        return false;
     }
 
     usuarioWithDisplay(usuario: any): string {

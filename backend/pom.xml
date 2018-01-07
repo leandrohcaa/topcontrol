@@ -7,6 +7,7 @@
 
 	<name>backend</name>
 	<description>TopControl backend</description>
+	<packaging>war</packaging>
 
 	<parent>
 		<groupId>com.topcontrol</groupId>

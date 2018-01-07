@@ -3,41 +3,26 @@ package com.topcontrol.business;
 import com.topcontrol.domain.*;
 import com.topcontrol.domain.dto.*;
 import com.topcontrol.domain.indicador.*;
-import com.topcontrol.infra.BusinessException;
 import com.topcontrol.repository.*;
 import com.topcontrol.repository.base.*;
-
 import com.topcontrol.business.base.*;
-
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.persistence.Transient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.*;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Component
 public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> implements RequisicaoBusiness {
+
+	public static final Long URGENCIA_DIFF_MINUTES = 15L;
+	public static final Long RESUME_PREPARACAO_MIN = 6L;
 
 	@Autowired
 	private transient RequisicaoRepository requisicaoRepository;
@@ -45,8 +30,6 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 	private transient ProdutoManager produtoManager;
 	@Autowired
 	private transient RequisicaoProdutoBusiness requisicaoProdutoBusiness;
-	@Autowired
-	private transient CaracteristicaProdutoBusiness caracteristicaProdutoBusiness;
 
 	@Override
 	public BaseRepository<Requisicao, Long> getRepository() {
@@ -77,7 +60,6 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 					RequisicaoProduto requisicaoProduto = new RequisicaoProduto();
 					requisicaoProduto.setProduto(new Produto(produtoDTO.getId()));
 					requisicaoProduto.setPreco(produtoDTO.getPreco());
-					requisicaoProduto.setUrgencia(IndicadorRequisicaoProdutoUrgencia.NO); // TODO
 					requisicaoProduto.setStatusPreparo(IndicadorRequisicaoProdutoStatusPreparo.EP);
 					requisicaoProduto.setStatusPagamento(IndicadorRequisicaoProdutoStatusPagamento.NP);
 					requisicaoProduto.setDataHoraRequisicaoPreparacao(LocalDateTime.now());
@@ -125,7 +107,6 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 					requisicaoProduto.setRequisicao(requisicao);
 					requisicaoProduto.setProduto(new Produto(grupoProdutoProdutoDTO.getId()));
 					requisicaoProduto.setPreco(grupoProdutoProdutoDTO.getPreco());
-					requisicaoProduto.setUrgencia(IndicadorRequisicaoProdutoUrgencia.NO); // TODO
 					requisicaoProduto.setStatusPreparo(IndicadorRequisicaoProdutoStatusPreparo.NI);
 					requisicaoProduto.setStatusPagamento(IndicadorRequisicaoProdutoStatusPagamento.NP);
 					requisicaoProdutoToAdd.add(requisicaoProduto);
@@ -144,7 +125,6 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 							requisicaoProduto.setPreco(precoGrupo != null ? precoGrupo
 									.divide(new BigDecimal(grupoProduto.getProdutoList().size()), RoundingMode.HALF_UP)
 									: produto.getPreco());
-							requisicaoProduto.setUrgencia(IndicadorRequisicaoProdutoUrgencia.NO); // TODO
 							requisicaoProduto.setStatusPreparo(IndicadorRequisicaoProdutoStatusPreparo.NI);
 							requisicaoProduto.setStatusPagamento(IndicadorRequisicaoProdutoStatusPagamento.NP);
 							requisicaoProdutoToAdd.add(requisicaoProduto);
@@ -159,20 +139,19 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 
 	@Override
 	public List<GrupoProdutoProdutoDTO> fillPrepareResumeList(Usuario usuario) {
+		List<RequisicaoProduto> requisicaoProdutoList;
 		List<Produto> produtoList = produtoManager.getProdutoList(null);
 		List<GrupoProdutoProdutoDTO> result = new ArrayList<>();
-		List<RequisicaoProduto> requisicaoProdutoList = requisicaoProdutoBusiness
-				.findNotConcludedByUsuario(usuario.getId());
+
+		requisicaoProdutoList = requisicaoProdutoBusiness.findNotConcludedByUsuario(usuario.getId());
 		for (Long produtoId : requisicaoProdutoList.stream().map(rp -> rp.getProduto().getId()).distinct()
 				.collect(Collectors.toList())) {
 			Produto produto = produtoList.stream().filter(p -> p.getId().equals(produtoId)).findFirst().get();
 			GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
 					produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO);
 
-			GrupoCaracteristicaProduto grupoUrgencia = produtoManager
-					.getGrupoCaracteristicaProduto(GrupoCaracteristicaProduto.ID_URGENCIA);
-			produto.getGrupoCaracteristicaProdutoList().add(0, grupoUrgencia);
-			dto.setGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList());
+			dto.addUrgenciaAndSetGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList(),
+					produtoManager.getGrupoCaracteristicaProduto(GrupoCaracteristicaProduto.ID_URGENCIA));
 
 			int emPreparacao = 0, aConsumir = 0, aPagar = 0;
 			List<RequisicaoProduto> requisicaoByProdutoList = requisicaoProdutoList.stream()
@@ -191,6 +170,26 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 
 			result.add(dto);
 		}
+
+		if (result.size() < RESUME_PREPARACAO_MIN) {
+			List<Long> produtoIdUsedList = result.stream().map(r -> r.getId()).distinct().collect(Collectors.toList());
+			requisicaoProdutoList = requisicaoProdutoBusiness.findConcludedByUsuarioNotProduto(usuario.getId(),
+					CollectionUtils.isEmpty(produtoIdUsedList) ? Arrays.asList(-1L) : produtoIdUsedList);
+			if (!CollectionUtils.isEmpty(requisicaoProdutoList)) {
+				for (Long produtoId : requisicaoProdutoList.stream().map(rp -> rp.getProduto().getId()).distinct()
+						.collect(Collectors.toList())) {
+					Produto produto = produtoList.stream().filter(p -> p.getId().equals(produtoId)).findFirst().get();
+					GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
+							produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO);
+
+					dto.addUrgenciaAndSetGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList(),
+							produtoManager.getGrupoCaracteristicaProduto(GrupoCaracteristicaProduto.ID_URGENCIA));
+
+					result.add(dto);
+				}
+			}
+		}
+
 		return result;
 	}
 
@@ -257,10 +256,17 @@ public class RequisicaoBusinessImpl extends AbstractBusiness<Requisicao, Long> i
 			dto.setUsuarioRequisicao(requisicaoProduto.getRequisicao().getUsuario().getNome());
 			dto.setRequisicaoProdutoId(requisicaoProduto.getId());
 			dto.setCaracteristicaProdutoList(requisicaoProduto.getCaracteristicaProdutoList(),
-					produtoManager.getCaracteristicaProduto(CaracteristicaProduto.ID_NORMAL));
+					produtoManager.getCaracteristicaProduto(CaracteristicaProduto.ID_URGENCIA_NORMAL));
 			result.add(dto);
 		}
-		return result.stream().sorted((a, b) -> b.getDatahora().compareTo(a.getDatahora()))
+
+		for (GrupoProdutoProdutoDTO dto : result) {
+			dto.setDatahoraForSort(
+					dto.getUrgencia().getId().equals(CaracteristicaProduto.ID_URGENCIA_NORMAL) ? dto.getDatahora()
+							: dto.getDatahora().plusMinutes(-URGENCIA_DIFF_MINUTES));
+		}
+
+		return result.stream().sorted((a, b) -> a.getDatahoraForSort().compareTo(b.getDatahoraForSort()))
 				.collect(Collectors.toList());
 	}
 

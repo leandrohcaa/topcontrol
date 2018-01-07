@@ -26,6 +26,13 @@ export class ModalCaracteristicaPrepare {
             for (var i = 0; i < grupoProdutoProdutoDTO.quantidade; i++) {
                 let dto = (JSON.parse(JSON.stringify(grupoProdutoProdutoDTO)));
                 dto.quantidade = 1;
+                for (let grupoCaracteristicaDTO of dto.grupoCaracteristicaProdutoDTOList) {
+                    for (let caracteristicaDTO of grupoCaracteristicaDTO.caracteristicaProdutoDTOList) {
+                        if (caracteristicaDTO.id == 7) { //Urgencia Normal
+                            caracteristicaDTO.selected = true;
+                        }
+                    }
+                }
                 this.dataModal.push(dto);
             }
         }

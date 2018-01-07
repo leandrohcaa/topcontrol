@@ -1,10 +1,8 @@
 package com.topcontrol.domain;
 
-import com.topcontrol.domain.base.*;
 import com.topcontrol.domain.dto.CaracteristicaProdutoDTO;
 import com.topcontrol.domain.indicador.IndicadorRequisicaoProdutoStatusPagamento;
 import com.topcontrol.domain.indicador.IndicadorRequisicaoProdutoStatusPreparo;
-import com.topcontrol.domain.indicador.IndicadorRequisicaoProdutoUrgencia;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -96,12 +94,6 @@ public class RequisicaoProduto extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-	@Column(name = "urgencia", nullable = false, length = 2)
-	@Enumerated(EnumType.STRING)
-	private IndicadorRequisicaoProdutoUrgencia urgencia;
-
-	@Getter
-	@Setter
 	@Column(name = "datahora_ultima_modificacao", nullable = false)
 	private LocalDateTime dataHoraUltimaModificacao;
 
@@ -138,8 +130,7 @@ public class RequisicaoProduto extends BaseEntity<Long> {
 	public RequisicaoProduto(Long id, Requisicao requisicao, Produto produto, GrupoProduto grupoProduto,
 			BigDecimal preco, IndicadorRequisicaoProdutoStatusPreparo statusPreparo,
 			IndicadorRequisicaoProdutoStatusPagamento statusPagamento, Usuario usuarioPreparo, Usuario usuarioPagamento,
-			LocalDateTime dataHoraPreparo, LocalDateTime dataHoraPagamento,
-			IndicadorRequisicaoProdutoUrgencia urgencia) {
+			LocalDateTime dataHoraPreparo, LocalDateTime dataHoraPagamento) {
 		super();
 		this.id = id;
 		this.requisicao = new Requisicao(requisicao.getId());
@@ -157,6 +148,5 @@ public class RequisicaoProduto extends BaseEntity<Long> {
 					usuarioPagamento.getUsuario());
 		this.dataHoraPreparo = dataHoraPreparo;
 		this.dataHoraPagamento = dataHoraPagamento;
-		this.urgencia = urgencia;
 	}
 }

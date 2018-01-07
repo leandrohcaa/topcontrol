@@ -36,7 +36,7 @@ public class UsuarioService extends AbstractEntityService<Usuario, Long> {
 		Usuario result = null;
 		usuario = usuarioBusiness.login(usuario);
 		result = new Usuario(usuario.getId(), usuario.getUsuario(), usuario.getSenha(), usuario.getNome(),
-				usuario.getEmail(), usuario.getTelefone(), new ArrayList<>(), usuario.getDono());
+				usuario.getEmail(), usuario.getTelefone(), usuario.getDono());
 		return result;
 	}
 
@@ -47,16 +47,17 @@ public class UsuarioService extends AbstractEntityService<Usuario, Long> {
 		Usuario result = null;
 		usuario = usuarioBusiness.loginOwner(usuario);
 		result = new Usuario(usuario.getId(), usuario.getUsuario(), usuario.getSenha(), usuario.getNome(),
-				usuario.getEmail(), usuario.getTelefone(), new ArrayList<>(), usuario.getDono());
-		for (UsuarioNegocio un : usuario.getUsuarioNegocioList()) {
-			UsuarioNegocio resultUsuarioNegocio = new UsuarioNegocio(un.getId(), new Usuario(result.getId()),
-					new Negocio(un.getNegocio().getId(), un.getNegocio().getNome(), un.getNegocio().getTheme()),
-					un.getUtilizaSenha(), new ArrayList<>(), new ArrayList<>());
-			for (Usuario cliente : un.getClienteList()) {
-				resultUsuarioNegocio.getClienteList().add(new Usuario(cliente.getId(), cliente.getUsuario()));
-			}
-			result.getUsuarioNegocioList().add(resultUsuarioNegocio);
+				usuario.getEmail(), usuario.getTelefone(), usuario.getDono());
+
+		UsuarioNegocio resultUsuarioNegocio = new UsuarioNegocio(usuario.getDono().getId(), new Usuario(result.getId()),
+				new Negocio(usuario.getDono().getNegocio().getId(), usuario.getDono().getNegocio().getNome(),
+						usuario.getDono().getNegocio().getTheme()),
+				usuario.getDono().getUtilizaSenha(), new ArrayList<>());
+		for (Usuario cliente : usuario.getDono().getClienteList()) {
+			resultUsuarioNegocio.getClienteList().add(new Usuario(cliente.getId(), cliente.getUsuario()));
 		}
+		result.setDono(resultUsuarioNegocio);
+
 		return result;
 	}
 }

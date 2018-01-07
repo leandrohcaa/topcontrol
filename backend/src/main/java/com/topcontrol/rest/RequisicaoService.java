@@ -104,6 +104,7 @@ public class RequisicaoService {
 	public PreparingForPaymentResponseDTO getpreparinglist(@RequestParam("usuarioNegocioId") Long usuarioNegocioId) {
 		PreparingForPaymentResponseDTO result = new PreparingForPaymentResponseDTO();
 		result.list = requisicaoBusiness.fillPreparingList(usuarioNegocioId);
+		result.list.forEach(dto -> dto = produtoManager.fillImage(dto));
 		result.lastModification = requisicaoProdutoBusiness.findMaxUltimaModificacaoByUsuarioNegocio(usuarioNegocioId);
 		return result;
 	}

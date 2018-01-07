@@ -6,7 +6,6 @@ export class Usuario {
     email: string;
     telefone: string;
     permissaoList: Array<Permissao>;
-    usuarioNegocioList: Array<UsuarioNegocio>;
     dono: UsuarioNegocio;
 }
 export class Permissao {
@@ -29,6 +28,5 @@ export class UsuarioNegocio {
     usuario: Usuario;
     negocio: Negocio;
     utilizaSenha: boolean;
-    usuarioList: Array<Usuario>;
     clienteList: Array<Usuario>;
 }

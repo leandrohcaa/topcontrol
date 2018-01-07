@@ -32,4 +32,6 @@ public interface RequisicaoProdutoBusiness extends IBusiness<RequisicaoProduto, 
 	LocalDateTime findMaxUltimaModificacaoByUsuarioRequisicao(Long usuarioId);
 
 	List<RequisicaoProduto> fetchCaracteristicaProduto(List<RequisicaoProduto> requisicaoProdutoList);
+	
+	List<RequisicaoProduto> findConcludedByUsuarioNotProduto(Long usuarioId, List<Long> produtoIdList);
 }

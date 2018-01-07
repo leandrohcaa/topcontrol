@@ -1,18 +1,19 @@
 <div mat-dialog-title>
-	<h4 style="margin: 0px;">Login do Administrador</h4>
+	<h4 style="margin: 0px;"><span *ngIf="dataModal.action == 'login'">Login</span><span *ngIf="dataModal.action == 'logout'">Logout</span> do Administrador</h4>
 </div>
 <div mat-dialog-content>
-  	<form name="form" (ngSubmit)="f.form.valid && loginOwner()" #f="ngForm" novalidate>
+  	<form name="form" (ngSubmit)="f.form.valid && execute()" #f="ngForm" novalidate>
 		<div fxLayout="column" fxLayoutAlign="center">
 		  <mat-form-field>
-		    <input matInput placeholder="Usuário" name="Usuario" [(ngModel)]="model.usuario" required>
+		    <input *ngIf="dataModal.action == 'login'" matInput placeholder="Usuário" name="Usuario" [(ngModel)]="model.usuario" required>
+		    <input *ngIf="dataModal.action == 'logout'" matInput placeholder="Usuário" name="Usuario" [(ngModel)]="model.usuario" required readonly>
 		  </mat-form-field>
 		  <mat-form-field>
 		    <input matInput type="password" placeholder="Senha" name="Senha" [(ngModel)]="model.senha" required>
 		  </mat-form-field>
 		  <div fxFlex style="padding-bottom:3px;">				  
 			<button style="float:left" color="primary" mat-raised-button (click)="close()">Cancelar</button>
-			<button style="float:right" color="primary" mat-raised-button type="submit">Entrar</button>
+			<button style="float:right" color="primary" mat-raised-button type="submit">Concluir</button>
 		  </div>
 		</div>
 	</form>

@@ -39,11 +39,9 @@ public class ProdutoService {
 			GrupoProdutoProdutoDTO dto = new GrupoProdutoProdutoDTO(produto.getId(), produto.getNome(),
 					produto.getDescricao(), produto.getPreco(), GrupoProdutoProdutoDTO.Tipo.PRODUTO);
 
-			GrupoCaracteristicaProduto grupoUrgencia = produtoManager
-					.getGrupoCaracteristicaProduto(GrupoCaracteristicaProduto.ID_URGENCIA);
-			produto.getGrupoCaracteristicaProdutoList().add(0, grupoUrgencia);
-			dto.setGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList());
-
+			dto.addUrgenciaAndSetGrupoCaracteristicaProdutoList(produto.getGrupoCaracteristicaProdutoList(),
+					produtoManager.getGrupoCaracteristicaProduto(GrupoCaracteristicaProduto.ID_URGENCIA));
+			
 			result.add(dto);
 		}
 		return result;

@@ -44,9 +44,9 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 	@Autowired
 	private transient GrupoCaracteristicaProdutoRepository grupoCaracteristicaProdutoRepository;
 
-	public static final String IMAGE_TYPE = ".jpeg";
+	public static final String IMAGE_TYPE = "jpeg";
 	public static final String PATH_IMAGE_PRODUCT = "./image/product/";
-	
+
 	private List<Produto> produtoList;
 	private List<GrupoProduto> grupoProdutoList;
 	private List<GrupoCaracteristicaProduto> grupoCaracteristicaProdutoList;
@@ -73,22 +73,25 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 
 	@Override
 	public Produto getProduto(Long id) {
-		return getProdutoList(null).stream().filter(p -> p.getId().equals(id)).findFirst().get();
+		return (Produto) getProdutoList(null).stream().filter(p -> p.getId().equals(id)).findFirst().get().clone();
 	}
 
 	@Override
 	public GrupoProduto getGrupoProduto(Long id) {
-		return getGrupoProdutoList(null).stream().filter(p -> p.getId().equals(id)).findFirst().get();
+		return (GrupoProduto) getGrupoProdutoList(null).stream().filter(p -> p.getId().equals(id)).findFirst().get()
+				.clone();
 	}
 
 	@Override
 	public GrupoCaracteristicaProduto getGrupoCaracteristicaProduto(Long id) {
-		return getGrupoCaracteristicaProdutoList().stream().filter(p -> p.getId().equals(id)).findFirst().get();
+		return (GrupoCaracteristicaProduto) getGrupoCaracteristicaProdutoList().stream()
+				.filter(p -> p.getId().equals(id)).findFirst().get().clone();
 	}
 
 	@Override
 	public CaracteristicaProduto getCaracteristicaProduto(Long id) {
-		return getCaracteristicaProdutoList().stream().filter(p -> p.getId().equals(id)).findFirst().get();
+		return (CaracteristicaProduto) getCaracteristicaProdutoList().stream().filter(p -> p.getId().equals(id))
+				.findFirst().get().clone();
 	}
 
 	@Override
@@ -108,8 +111,9 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 										.getGrupoCaracteristicaProdutoList()) {
 									GrupoCaracteristicaProduto grupoCaracteristicaProdutoForFetch = getGrupoCaracteristicaProduto(
 											grupoCaracteristicaProduto.getId());
-									if (!produto.getGrupoCaracteristicaProdutoList()
-											.contains(grupoCaracteristicaProdutoForFetch))
+									if (!produto.getGrupoCaracteristicaProdutoList().stream().map(p -> p.getId())
+											.collect(Collectors.toList())
+											.contains(grupoCaracteristicaProdutoForFetch.getId()))
 										produto.getGrupoCaracteristicaProdutoList()
 												.add(grupoCaracteristicaProdutoForFetch);
 								}
@@ -120,7 +124,7 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 			}
 		}
 
-		return filterProdutoByUsuarioNegocio(new ArrayList<>(produtoList), usuarioNegocioId);
+		return new ArrayList<>(filterProdutoByUsuarioNegocio(new ArrayList<>(produtoList), usuarioNegocioId));
 	}
 
 	@Override
@@ -140,7 +144,7 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 				}
 			}
 		}
-		return filterGrupoProdutoByUsuarioNegocio(new ArrayList<>(grupoProdutoList), usuarioNegocioId);
+		return new ArrayList<>(filterGrupoProdutoByUsuarioNegocio(new ArrayList<>(grupoProdutoList), usuarioNegocioId));
 	}
 
 	@Override
@@ -161,7 +165,7 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 				}
 			}
 		}
-		return grupoCaracteristicaProdutoList;
+		return new ArrayList<>(grupoCaracteristicaProdutoList);
 	}
 
 	@Override
@@ -173,7 +177,7 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 				}
 			}
 		}
-		return caracteristicaProdutoList;
+		return new ArrayList<>(caracteristicaProdutoList);
 	}
 
 	private List<Produto> filterProdutoByUsuarioNegocio(List<Produto> produtoListResult, Long usuarioNegocioId) {
@@ -203,6 +207,10 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
 		BufferedImage img;
 		try {
+			Path path = Paths.get(PATH_IMAGE_PRODUCT);
+			if (!Files.exists(path))
+				Files.createDirectories(path);
+			
 			img = ImageIO.read(new ByteArrayInputStream(imageBytes));
 			ImageIO.write(img, IMAGE_TYPE, new File(PATH_IMAGE_PRODUCT + dto.getId() + "." + IMAGE_TYPE));
 		} catch (IOException e) {
@@ -212,7 +220,7 @@ public class ProdutoManagerImpl extends AbstractBusiness<Produto, Long> implemen
 
 	@Override
 	public GrupoProdutoProdutoDTO fillImage(GrupoProdutoProdutoDTO dto) {
-		Path path = Paths.get(PATH_IMAGE_PRODUCT + dto.getId() + IMAGE_TYPE);
+		Path path = Paths.get(PATH_IMAGE_PRODUCT + dto.getId() + "." + IMAGE_TYPE);
 		if (Files.exists(path)) {
 			byte[] bytes;
 			try {

@@ -20,6 +20,12 @@ public interface RequisicaoProdutoRepository
 			+ " and rp.ativo = 1 ")
 	List<RequisicaoProduto> findNotConcludedByUsuario(@Param("usuarioId") Long usuarioId);
 
+	@Query(" select rp from RequisicaoProduto rp JOIN FETCH rp.requisicao r JOIN FETCH rp.produto p "
+			+ " where r.usuario.id = :usuarioId " + " and (rp.statusPreparo = 'CO' and rp.statusPagamento = 'PG') "
+			+ " and rp.ativo = 1 and p.id not in (:produtoIdList) ")
+	List<RequisicaoProduto> findConcludedByUsuarioNotProduto(@Param("usuarioId") Long usuarioId,
+			@Param("produtoIdList") List<Long> produtoIdList);
+
 	@Query(" select rp from RequisicaoProduto rp JOIN rp.requisicao r " + " where r.usuario.id = :usuarioId "
 			+ " and rp.produto.id IN (:produtoIdList) and (rp.statusPreparo NOT IN ('CO','EP')) "
 			+ " and rp.ativo = 1 ")

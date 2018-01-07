@@ -48,22 +48,14 @@ public class UsuarioBusinessImpl extends AbstractBusiness<Usuario, Long> impleme
 
 	@Override
 	public Usuario loginOwner(Usuario usuario) {
-		if (usuario.getSenha() != null) {
-			usuario.setSenha(cryptPassword(usuario.getSenha()));
-			usuario = usuarioRepository.loginOwner(usuario.getUsuario(), usuario.getSenha());
-		} else
-			usuario = usuarioRepository.loginOwner(usuario.getUsuario());
+		usuario.setSenha(cryptPassword(usuario.getSenha()));
+		usuario = usuarioRepository.loginOwner(usuario.getUsuario(), usuario.getSenha());
 
 		if (usuario == null)
 			throw new BusinessException("Credenciais não permitidas.", null);
 		else {
-			for (UsuarioNegocio usuarioNegocio : usuario.getUsuarioNegocioList()) {
-				usuarioNegocio.setClienteList(usuarioRepository.fetchClienteListInUsuarioNegocio(
-						usuarioNegocio.getUsuario().getId(), usuarioNegocio.getNegocio().getId()));
-
-				usuarioNegocio.setUsuarioList(usuarioRepository.fetchUsuarioListInUsuarioNegocio(
-						usuarioNegocio.getUsuario().getId(), usuarioNegocio.getNegocio().getId()));
-			}
+			usuario.getDono().setClienteList(usuarioRepository.fetchClienteListInUsuarioNegocio(
+					usuario.getDono().getUsuario().getId(), usuario.getDono().getNegocio().getId()));
 		}
 
 		return usuario;

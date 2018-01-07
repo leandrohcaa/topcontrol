@@ -48,8 +48,12 @@ export class AuthenticationRepository {
         localStorage.removeItem('currentUser');
     }
  
-    logoutOwner() {
-        localStorage.removeItem('currentOwnerUser');
+    logoutOwner(user: Usuario) {
+        return this.http.post(this.webServiceService.getURL() + 'user/loginOwner', user)
+            .map((response: Response) => {
+                localStorage.removeItem('currentOwnerUser');
+                return this.webServiceService.catchResponsePOST(response);
+            });
     }
 
     create(user: Usuario) {

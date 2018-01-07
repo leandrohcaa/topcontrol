@@ -15,7 +15,7 @@ import lombok.*;
 public class GrupoCaracteristicaProduto extends BaseEntity<Long> {
 
 	private static final long serialVersionUID = 1L;
-	public static final Long ID_URGENCIA = 4L;
+	public static final Long ID_URGENCIA = 11L;
 
 	@Getter
 	@Setter

@@ -11,7 +11,7 @@
                 	<div style="width: 100%; font-size: larger;"><h2>Desfazer</h2><ion-icon name="undo"></ion-icon></div>
         		</div>
                 <ion-thumbnail item-start>
-                    <img src="{{p.imagem}}">
+                    <img src="data:image/jpeg;base64,{{p.imageBase64}}">
                 </ion-thumbnail>
                 <h2>{{p.nome}}<span *ngIf="p.caracteristicaProdutoDTOResume != ''"> ({{p.caracteristicaProdutoDTOResume}})</span></h2>
                 <h3>Usuário: {{p.usuarioRequisicao}}</h3>

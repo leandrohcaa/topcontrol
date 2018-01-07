@@ -37,7 +37,7 @@ export class DataConfigComponent implements OnInit {
     productUploadImage(row: GrupoProdutoProdutoDTO) {
         let dialogRef = this.dialog.open(ModalDataConfigUploadImage);
         dialogRef.afterClosed().subscribe(result => {
-            if (result != null)
+            if (result != null) {
                 this.alertService.showLoading();
                 this.productRepository.saveImage(row, result).subscribe(
                     data => {
@@ -47,6 +47,7 @@ export class DataConfigComponent implements OnInit {
                         this.alertService.hideLoading();
                         this.alertService.catchError(error);
                     });
+            }
         });
     }
 }

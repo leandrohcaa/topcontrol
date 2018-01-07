@@ -53,19 +53,23 @@ public class GrupoProdutoProdutoDTO implements Serializable {
 
 	@Getter
 	@Setter
-	private Integer aPagar;
+	private Integer aPagar = 0;
 
 	@Getter
 	@Setter
-	private Integer aConsumir;
+	private Integer aConsumir = 0;
 
 	@Getter
 	@Setter
-	private Integer emPreparacao;
+	private Integer emPreparacao = 0;
 
 	@Getter
 	@Setter
 	private LocalDateTime datahora;
+
+	@Getter
+	@Setter
+	private LocalDateTime datahoraForSort;
 
 	@Getter
 	@Setter
@@ -118,14 +122,14 @@ public class GrupoProdutoProdutoDTO implements Serializable {
 			CaracteristicaProduto urgencia) {
 		if (urgencia != null) {
 			if (caracteristicaProdutoList.stream().map(c -> c.getId())
-					.anyMatch(c -> c.equals(CaracteristicaProduto.ID_URGENTE))) {
+					.anyMatch(c -> c.equals(CaracteristicaProduto.ID_URGENCIA_URGENTE))) {
 				urgencia = caracteristicaProdutoList.stream()
-						.filter(c -> c.getId().equals(CaracteristicaProduto.ID_URGENTE)).findFirst().get();
+						.filter(c -> c.getId().equals(CaracteristicaProduto.ID_URGENCIA_URGENTE)).findFirst().get();
 			}
 
 			this.urgencia = new CaracteristicaProdutoDTO(urgencia.getId(), urgencia.getNome(), urgencia.getDescricao());
-			caracteristicaProdutoList.removeIf(c -> c.getId().equals(CaracteristicaProduto.ID_NORMAL)
-					|| c.getId().equals(CaracteristicaProduto.ID_URGENTE));
+			caracteristicaProdutoList.removeIf(c -> c.getId().equals(CaracteristicaProduto.ID_URGENCIA_NORMAL)
+					|| c.getId().equals(CaracteristicaProduto.ID_URGENCIA_URGENTE));
 		}
 
 		caracteristicaProdutoDTOList = new ArrayList<>();
@@ -134,6 +138,13 @@ public class GrupoProdutoProdutoDTO implements Serializable {
 					caracteristicaProduto.getNome(), caracteristicaProduto.getDescricao());
 			caracteristicaProdutoDTOList.add(dto);
 		}
+	}
+
+	public void addUrgenciaAndSetGrupoCaracteristicaProdutoList(
+			List<GrupoCaracteristicaProduto> grupoCaracteristicaProdutoList, GrupoCaracteristicaProduto urgencia) {
+		grupoCaracteristicaProdutoList = new ArrayList<>(grupoCaracteristicaProdutoList);
+		grupoCaracteristicaProdutoList.add(0, urgencia);
+		setGrupoCaracteristicaProdutoList(grupoCaracteristicaProdutoList);
 	}
 
 	public void setGrupoCaracteristicaProdutoList(List<GrupoCaracteristicaProduto> grupoCaracteristicaProdutoList) {

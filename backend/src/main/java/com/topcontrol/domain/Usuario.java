@@ -1,13 +1,10 @@
 package com.topcontrol.domain;
 
-import com.topcontrol.domain.base.*;
-import java.util.List;
-
 import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@ToString(exclude = { "usuarioNegocioList", "dono" })
+@ToString(exclude = { "dono" })
 @Table(name = "usuario")
 public class Usuario extends BaseEntity<Long> {
 
@@ -40,24 +37,18 @@ public class Usuario extends BaseEntity<Long> {
 
 	@Getter
 	@Setter
-	@OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
-	private List<UsuarioNegocio> usuarioNegocioList;
-
-	@Getter
-	@Setter
 	@ManyToOne
 	@JoinColumn(name = "dono")
 	private UsuarioNegocio dono;
 
 	public Usuario(Long id, String usuario, String senha, String nome, String email, String telefone,
-			List<UsuarioNegocio> usuarioNegocioList, UsuarioNegocio dono) {
+			UsuarioNegocio dono) {
 		super(id);
 		this.usuario = usuario;
 		this.senha = senha;
 		this.nome = nome;
 		this.email = email;
 		this.telefone = telefone;
-		this.usuarioNegocioList = usuarioNegocioList;
 		if (dono != null)
 			this.dono = new UsuarioNegocio(dono.getId());
 	}

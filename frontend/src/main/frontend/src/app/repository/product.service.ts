@@ -17,8 +17,8 @@ export class ProductRepository {
     getProductAndGroup() {
         var owner = this.authenticationRepository.getOwner();
         var usuarioNegocioId = null;
-        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
-            usuarioNegocioId = owner.usuarioNegocioList[0].id;
+        if (owner != null && owner.dono != null)
+            usuarioNegocioId = owner.dono.id;
         return this.http.get(this.webServiceService.getURL() + 'product/productandgrouplist?usuarioNegocioId=' + usuarioNegocioId)
             .map((response: Response) => {
                 return this.webServiceService.catchResponseGET(response);
@@ -28,8 +28,8 @@ export class ProductRepository {
     getProduct() {
         var owner = this.authenticationRepository.getOwner();
         var usuarioNegocioId = null;
-        if (owner != null && owner.usuarioNegocioList != null && owner.usuarioNegocioList.length > 0)
-            usuarioNegocioId = owner.usuarioNegocioList[0].id;
+        if (owner != null && owner.dono != null)
+            usuarioNegocioId = owner.dono.id;
         return this.http.get(this.webServiceService.getURL() + 'product/productlist?usuarioNegocioId=' + usuarioNegocioId)
             .map((response: Response) => {
                 return this.webServiceService.catchResponseGET(response);
